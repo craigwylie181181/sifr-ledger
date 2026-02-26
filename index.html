@@ -158,15 +158,14 @@
         .impact-medium { background: rgba(255, 170, 0, 0.2); color: #ffaa00; border: 1px solid #ffaa00; }
         .impact-low { background: rgba(100, 100, 100, 0.2); color: #aaa; border: 1px solid #555; }
         
-        /* Loading Text */
+        /* Diagnostic Text */
         #loading {
             color: #00ffcc;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            font-weight: bold;
+            padding: 10px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -177,7 +176,7 @@
             <span class="ticker-item">▲ EU ETS CARBON: €62.40 (+1.2%)</span>
             <span class="ticker-item">▼ NATURE-BASED OFFSETS: $4.15 (-0.5%)</span>
             <span class="ticker-item">▲ GCC DAC CAPACITIES: +3.4%</span>
-            <span class="ticker-item">◆ ASTON ENERGY CARBON INITIATIVE: ACTIVE</span>
+            <span class="ticker-item">◆ SIFR LEDGER CARBON INITIATIVE: ACTIVE</span>
             <span class="ticker-item">▲ GLOBAL SOIL SEQUESTRATION VOLUME: 12.4M TONS</span>
         </div>
     </div>
@@ -198,7 +197,7 @@
             <canvas id="ledgerChart"></canvas>
         </div>
 
-        <p id="loading">Establishing secure connection to database...</p>
+        <div id="loading">INITIALIZING SYSTEM...</div>
 
         <div class="grid-container">
             <div class="data-section">
@@ -213,7 +212,8 @@
     </div>
 
     <script>
-        console.log("SYSTEM BOOTING: The JavaScript is alive.");        
+        // ==========================================
+        // 🔴 CRITICAL: PASTE YOUR GOOGLE WEB APP URL HERE 🔴
         // ==========================================
         const apiUrl = "https://script.google.com/macros/s/AKfycbxR038g15O7CKEPd9Q0u3lPFoO4RFWllVIUIC4lFhUDfZWXht6wyuD1YN73uEKTfbug/exec"; 
         // ==========================================
@@ -270,12 +270,20 @@
             return 'N/A'; 
         }
 
-        // Feature 3: Bulletproof Data Fetching & UI Rendering
+        // Feature 3: Diagnostic Data Fetching
         function loadData() {
+            const loadingText = document.getElementById('loading');
+            loadingText.innerText = "SYSTEM BOOT: JavaScript is running. Attempting to contact Google...";
+
             fetch(apiUrl)
-                .then(response => response.json())
+                .then(response => {
+                    loadingText.innerText = "STATUS: Reached Google server. Requesting data payload...";
+                    if (!response.ok) throw new Error("Google rejected the connection. Status: " + response.status);
+                    return response.json();
+                })
                 .then(data => {
-                    document.getElementById('loading').style.display = 'none';
+                    loadingText.innerText = "STATUS: Payload received! Unpacking Projects and Transactions...";
+                    loadingText.style.display = 'none'; // Hides the text once data is safe
 
                     // Populate Transactions
                     const transactionsDiv = document.getElementById('transactions');
@@ -289,19 +297,16 @@
                             transactionsDiv.innerHTML += `
                                 <div class="data-card">
                                     <div class="data-row">
-                                        <span class="data-label">Date</span>
-                                        <span class="data-value">${dateVal}</span>
+                                        <span class="data-label">Date</span><span class="data-value">${dateVal}</span>
                                     </div>
                                     <div class="data-row">
-                                        <span class="data-label">Entity</span>
-                                        <span class="data-value">${entityVal}</span>
+                                        <span class="data-label">Entity</span><span class="data-value">${entityVal}</span>
                                     </div>
                                     <div class="data-row">
                                         <div class="data-label">Intelligence Brief ${impactBadge}</div>
                                         <div class="data-details-text">${detailsVal}</div>
                                     </div>
-                                </div>
-                            `;
+                                </div>`;
                         });
                     }
 
@@ -317,6 +322,27 @@
                             projectsDiv.innerHTML += `
                                 <div class="data-card">
                                     <div class="data-row">
-                                        <span class="data-label">Date</span>
+                                        <span class="data-label">Date</span><span class="data-value">${dateVal}</span>
+                                    </div>
+                                    <div class="data-row">
+                                        <span class="data-label">Project</span><span class="data-value">${projectVal}</span>
+                                    </div>
+                                    <div class="data-row">
+                                        <div class="data-label">Infrastructure Spec ${impactBadge}</div>
+                                        <div class="data-details-text">${detailsVal}</div>
+                                    </div>
+                                </div>`;
+                        });
+                    }
+                    drawChart();
+                })
+                .catch(error => {
+                    loadingText.style.color = "#ff3333";
+                    loadingText.innerText = "CRASH REPORT: " + error.message + " | Check your apiUrl link!";
+                });
+        }
 
-                                        <span class="data
+        loadData();
+    </script>
+</body>
+</html>
