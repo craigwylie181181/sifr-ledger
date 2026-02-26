@@ -285,64 +285,58 @@
                     loadingText.innerText = "STATUS: Payload received! Unpacking Projects and Transactions...";
                     loadingText.style.display = 'none'; // Hides the text once data is safe
 
-                    // Populate Transactions
+                   // 1. Populate Transactions (Refined for Sifr Carbon headers)
                     const transactionsDiv = document.getElementById('transactions');
                     if (data.transactions) {
                         data.transactions.forEach(row => {
-                            const dateVal = fuzzyFind(row, ['date', 'time']);
-                            const entityVal = fuzzyFind(row, ['buyer', 'seller', 'entity', 'company', 'party']);
-                            const detailsVal = fuzzyFind(row, ['detail', 'volume', 'capacity', 'extracted']);
+                            const dateVal = fuzzyFind(row, ['date', 'time', 'added']);
+                            const entityVal = fuzzyFind(row, ['entity', 'buyer', 'seller', 'company', 'party']);
+                            const detailsVal = fuzzyFind(row, ['detail', 'volume', 'price', 'carbon', 'purchased', 'credits']);
                             
                             const impactBadge = getImpactTag(detailsVal);
                             transactionsDiv.innerHTML += `
                                 <div class="data-card">
                                     <div class="data-row">
-                                        <span class="data-label">Date</span><span class="data-value">${dateVal}</span>
+                                        <span class="data-label">Timestamp</span><span class="data-value">${dateVal}</span>
                                     </div>
                                     <div class="data-row">
-                                        <span class="data-label">Entity</span><span class="data-value">${entityVal}</span>
+                                        <span class="data-label">Counterparty</span><span class="data-value">${entityVal}</span>
                                     </div>
                                     <div class="data-row">
-                                        <div class="data-label">Intelligence Brief ${impactBadge}</div>
+                                        <div class="data-label">Transaction Intel ${impactBadge}</div>
                                         <div class="data-details-text">${detailsVal}</div>
                                     </div>
                                 </div>`;
                         });
                     }
 
-                    // Populate Projects
+                    // 2. Populate Projects (Refined for Sifr Carbon headers)
                     const projectsDiv = document.getElementById('projects');
                     if (data.projects) {
                         data.projects.forEach(row => {
-                            const dateVal = fuzzyFind(row, ['date', 'time']);
-                            const projectVal = fuzzyFind(row, ['project', 'entity', 'developer', 'facility']);
-                            const detailsVal = fuzzyFind(row, ['detail', 'capacity', 'volume', 'extracted']);
+                            const dateVal = fuzzyFind(row, ['date', 'time', 'added']);
+                            const projectVal = fuzzyFind(row, ['project', 'entity', 'developer', 'facility', 'name', 'site']);
+                            const detailsVal = fuzzyFind(row, ['detail', 'capacity', 'volume', 'description', 'status', 'ccus', 'sequestration']);
 
                             const impactBadge = getImpactTag(detailsVal);
                             projectsDiv.innerHTML += `
                                 <div class="data-card">
                                     <div class="data-row">
-                                        <span class="data-label">Date</span><span class="data-value">${dateVal}</span>
+                                        <span class="data-label">Registry Date</span><span class="data-value">${dateVal}</span>
                                     </div>
                                     <div class="data-row">
-                                        <span class="data-label">Project</span><span class="data-value">${projectVal}</span>
+                                        <span class="data-label">Asset/Entity</span><span class="data-value">${projectVal}</span>
                                     </div>
                                     <div class="data-row">
-                                        <div class="data-label">Infrastructure Spec ${impactBadge}</div>
+                                        <div class="data-label">Project Intelligence ${impactBadge}</div>
                                         <div class="data-details-text">${detailsVal}</div>
                                     </div>
                                 </div>`;
                         });
                     }
-                    drawChart();
-                })
-                .catch(error => {
-                    loadingText.style.color = "#ff3333";
-                    loadingText.innerText = "CRASH REPORT: " + error.message + " | Check your apiUrl link!";
-                });
-        }
 
         loadData();
     </script>
 </body>
 </html>
+
