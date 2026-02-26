@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sifr Ledger | Carbon Intelligence Terminal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Base Terminal Styles */
+        body {
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2 {
+            color: #00ffcc;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Live Ticker Styles */
+        .ticker-wrap {
+            width: 100%;
+            background-color: #111;
+            border-bottom: 1px solid #333;
+            overflow: hidden;
+            padding: 8px 0;
+            color: #00ffcc;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .ticker-move {
+            display: inline-block;
+            animation: ticker 30s linear infinite;
+        }
+        @keyframes ticker {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+        .ticker-item { margin-right: 40px; }
+
+        /* Consortium Radar (Filters) */
+        .radar-filters {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background-color: #222;
+            color: #aaa;
+            border: 1px solid #444;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background-color: rgba(0, 255, 204, 0.1);
+            color: #00ffcc;
+            border-color: #00ffcc;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background-color: #111;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 30px;
+            height: 300px;
+        }
+
+        /* Database Grids */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .data-section {
+            background-color: #111;
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 4px;
+        }
+        
+        /* Upgraded Data Cards */
+        .data-card {
+            background-color: #151515;
+            border: 1px solid #333;
+            border-left: 4px solid #00ffcc;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease;
+        }
+        .data-card:hover {
+            transform: translateY(-2px);
+            border-left-color: #ff3333; 
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            border-bottom: 1px dotted #333;
+            padding-bottom: 4px;
+        }
+        .data-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+            display: block;
+            margin-top: 12px;
+        }
+        .data-label { 
+            color: #666; 
+            text-transform: uppercase; 
+            font-size: 11px; 
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .data-value { 
+            color: #fff; 
+            text-align: right; 
+            font-weight: bold; 
+            font-size: 13px;
+            max-width: 65%; 
+        }
+        .data-details-text {
+            color: #ccc;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-top: 5px;
+        }
+        
+        /* Severity Tags */
+        .impact-badge {
+            float: right;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .impact-high { background: rgba(255, 50, 50, 0.2); color: #ff3333; border: 1px solid #ff3333; }
+        .impact-medium { background: rgba(255, 170, 0, 0.2); color: #ffaa00; border: 1px solid #ffaa00; }
+        .impact-low { background: rgba(100, 100, 100, 0.2); color: #aaa; border: 1px solid #555; }
+        
+        /* Loading Text */
+        #loading {
+            color: #00ffcc;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ticker-wrap">
+        <div class="ticker-move">
+            <span class="ticker-item">▲ EU ETS CARBON: €62.40 (+1.2%)</span>
+            <span class="ticker-item">▼ NATURE-BASED OFFSETS: $4.15 (-0.5%)</span>
+            <span class="ticker-item">▲ GCC DAC CAPACITIES: +3.4%</span>
+            <span class="ticker-item">◆ ASTON ENERGY CARBON INITIATIVE: ACTIVE</span>
+            <span class="ticker-item">▲ GLOBAL SOIL SEQUESTRATION VOLUME: 12.4M TONS</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Sifr Ledger Terminal</h1>
+        <p>Live Carbon & Sequestration Infrastructure Intelligence</p>
+
+        <div class="radar-filters">
+            <button class="filter-btn active">Live Feed</button>
+            <button class="filter-btn">Carbon Credits</button>
+            <button class="filter-btn">CCUS & DAC</button>
+            <button class="filter-btn">Soil Sequestration</button>
+            <button class="filter-btn">Nature-Based Solutions</button>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="ledgerChart"></canvas>
+        </div>
+
+        <p id="loading">Establishing secure connection to database...</p>
+
+        <div class="grid-container">
+            <div class="data-section">
+                <h2>Transactions</h2>
+                <div id="transactions"></div>
+            </div>
+            <div class="data-section">
+                <h2>Projects</h2>
+                <div id="projects"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log("SYSTEM BOOTING: The JavaScript is alive.");        
+        // ==========================================
+        // 🔴 CRITICAL: PASTE YOUR GOOGLE WEB APP URL HERE 🔴
+        // ==========================================
+        const apiUrl = "https://script.google.com/macros/s/AKfycbxR038g15O7CKEPd9Q0u3lPFoO4RFWllVIUIC4lFhUDfZWXht6wyuD1YN73uEKTfbug/exec"; 
+        // ==========================================
+
+        // Feature 1: Severity Tagging
+        function getImpactTag(text) {
+            if (!text) return '';
+            const lowerText = String(text).toLowerCase();
+            if (lowerText.includes('massive') || lowerText.includes('billion') || lowerText.includes('adnoc') || lowerText.includes('exxonmobil') || lowerText.includes('sovereign')) {
+                return `<span class="impact-badge impact-high">HIGH IMPACT</span>`;
+            } else if (lowerText.includes('million') || lowerText.includes('contract') || lowerText.includes('stake') || lowerText.includes('offtake')) {
+                return `<span class="impact-badge impact-medium">MED IMPACT</span>`;
+            }
+            return `<span class="impact-badge impact-low">LOGGED</span>`;
+        }
+
+        // Feature 2: Strict Carbon Analytics (Chart.js)
+        function drawChart() {
+            const canvas = document.getElementById('ledgerChart');
+            if (!canvas) return; 
+            const ctx = canvas.getContext('2d');
+            
+            const dataValues = [40, 30, 20, 10]; 
+            const labels = ['Voluntary Carbon Credits', 'CCUS & DAC', 'Soil Sequestration', 'Nature-Based Solutions'];
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataValues,
+                        backgroundColor: ['#00ffcc', '#ff3333', '#ffaa00', '#4444ff'],
+                        borderColor: '#111',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: '#aaa', font: { family: 'monospace' } } }
+                    }
+                }
+            });
+        }
+
+        // Helper Feature: Fuzzy Search to eliminate "N/A"
+        function fuzzyFind(row, searchTerms) {
+            const keys = Object.keys(row);
+            for (let term of searchTerms) {
+                const foundKey = keys.find(k => k.toLowerCase().includes(term));
+                if (foundKey && row[foundKey]) return row[foundKey];
+            }
+            return 'N/A'; 
+        }
+
+        // Feature 3: Bulletproof Data Fetching & UI Rendering
+        function loadData() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loading').style.display = 'none';
+
+                    // Populate Transactions
+                    const transactionsDiv = document.getElementById('transactions');
+                    if (data.transactions) {
+                        data.transactions.forEach(row => {
+                            const dateVal = fuzzyFind(row, ['date', 'time']);
+                            const entityVal = fuzzyFind(row, ['buyer', 'seller', 'entity', 'company', 'party']);
+                            const detailsVal = fuzzyFind(row, ['detail', 'volume', 'capacity', 'extracted']);
+                            
+                            const impactBadge = getImpactTag(detailsVal);
+                            transactionsDiv.innerHTML += `
+                                <div class="data-card">
+                                    <div class="data-row">
+                                        <span class="data-label">Date</span>
+                                        <span class="data-value">${dateVal}</span>
+                                    </div>
+                                    <div class="data-row">
+                                        <span class="data-label">Entity</span>
+                                        <span class="data-value">${entityVal}</span>
+                                    </div>
+                                    <div class="data-row">
+                                        <div class="data-label">Intelligence Brief ${impactBadge}</div>
+                                        <div class="data-details-text">${detailsVal}</div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    // Populate Projects
+                    const projectsDiv = document.getElementById('projects');
+                    if (data.projects) {
+                        data.projects.forEach(row => {
+                            const dateVal = fuzzyFind(row, ['date', 'time']);
+                            const projectVal = fuzzyFind(row, ['project', 'entity', 'developer', 'facility']);
+                            const detailsVal = fuzzyFind(row, ['detail', 'capacity', 'volume', 'extracted']);
+
+                            const impactBadge = getImpactTag(detailsVal);
+                            projectsDiv.innerHTML += `
+                                <div class="data-card">
+                                    <div class="data-row">
+                                        <span class="data-label">Date</span>
+                                        <span class="data
