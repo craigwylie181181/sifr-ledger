@@ -6,46 +6,55 @@
     <title>SIFR LEDGER</title>
     <style>
         :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; }
-        body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; padding: 20px; }
+        body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
-        /* Layout & Scrolling */
-        .container { max-width: 1400px; margin: 0 auto; }
+        /* 1. Market Ticker */
+        .ticker-wrap { background: #000; border-bottom: 1px solid var(--neon); padding: 8px 0; overflow: hidden; white-space: nowrap; }
+        .ticker { display: inline-block; animation: marquee 60s linear infinite; color: var(--neon); font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        .container { padding: 20px; max-width: 1400px; margin: 0 auto; }
         .header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
         .logo { font-weight: bold; font-size: 28px; color: var(--neon); letter-spacing: 6px; }
-        
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .scroll-box { max-height: 600px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
-        
-        h2 { font-size: 14px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 20px; }
 
-        /* Status & Tech Badges */
+        /* 2. Main Grid & Scrolling */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
+        .scroll-box { max-height: 500px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
+        h2 { font-size: 13px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
+
+        /* 3. Status Badges & Icons */
         .badge { font-size: 9px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
-        .status-permanent { background: #0044ff; color: #fff; border: 1px solid #00bcff; } /* Geologic/CCUS */
-        .status-decadal { background: #006622; color: #fff; border: 1px solid #00ff66; } /* Nature-based */
+        .status-permanent { background: #0044ff; color: #fff; border: 1px solid #00bcff; }
+        .status-decadal { background: #006622; color: #fff; border: 1px solid #00ff66; }
         .status-verified { color: var(--neon); border: 1px solid var(--neon); }
-        
-        /* Tech Pathway Icons */
-        .pathway-icon { display: inline-block; width: 12px; height: 12px; margin-right: 8px; border-radius: 50%; }
-        .icon-industrial { background: #ffaa00; box-shadow: 0 0 5px #ffaa00; } /* Industrial/CCUS */
-        .icon-biospheric { background: #00ff66; box-shadow: 0 0 5px #00ff66; } /* Soil/Forest */
+        .pathway-icon { display: inline-block; width: 10px; height: 10px; margin-right: 8px; border-radius: 50%; }
+        .icon-industrial { background: #ffaa00; box-shadow: 0 0 5px #ffaa00; }
+        .icon-biospheric { background: #00ff66; box-shadow: 0 0 5px #00ff66; }
 
-        /* Cards */
-        .card { background: var(--card); border: 1px solid var(--border); padding: 18px; margin-bottom: 15px; position: relative; border-radius: 2px; border-left: 3px solid #333; }
-        .card:hover { border-color: var(--neon); background: #181818; }
-        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; margin-bottom: 10px; font-weight: bold; }
-        .title { color: #fff; font-size: 15px; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        .stat { color: var(--neon); font-size: 13px; font-weight: bold; }
-        .intel { color: #888; font-size: 11px; margin-top: 10px; border-top: 1px solid #222; padding-top: 8px; line-height: 1.4; }
-        
+        /* 4. Cards */
+        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; position: relative; border-radius: 2px; border-left: 3px solid #333; }
+        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; margin-bottom: 8px; font-weight: bold; }
+        .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; }
+        .stat { color: var(--neon); font-size: 12px; font-weight: bold; margin-top: 4px; display: block; }
+        .intel { color: #888; font-size: 11px; margin-top: 8px; border-top: 1px solid #222; padding-top: 8px; line-height: 1.4; }
         .country-tag { color: #aaa; background: #222; padding: 1px 4px; font-size: 9px; }
+
+        /* 5. News Feed Section */
+        .news-feed { border-top: 1px solid #333; padding-top: 20px; }
+        .news-item { font-size: 12px; color: #aaa; padding: 10px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
+        .news-item a { color: var(--neon); text-decoration: none; font-size: 10px; border: 1px solid var(--neon); padding: 2px 5px; }
     </style>
 </head>
 <body>
 
+    <div class="ticker-wrap">
+        <div class="ticker" id="ticker-content">CONNECTING TO SIFR_DATA_UPLINK... // GCC MARKET INDEX: STABLE // </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <div class="logo">SIFR LEDGER</div>
-            <div style="font-size: 10px; color: var(--neon);">SYSTEM_STATUS: ENCRYPTED_UPLINK</div>
+            <div id="status-tag" style="font-size: 10px; color: var(--neon);">● SIGNAL_STABLE</div>
         </div>
 
         <div class="grid">
@@ -59,13 +68,18 @@
                 <div class="scroll-box" id="p-list"></div>
             </div>
         </div>
+
+        <div class="news-feed">
+            <h2>3. Raw News Intelligence</h2>
+            <div id="n-list"></div>
+        </div>
     </div>
 
     <script>
         const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
 
         function formatNum(n) {
-            if (!n || isNaN(n.toString().replace(/,/g, ''))) return n;
+            if (!n) return "0";
             return Number(n.toString().replace(/,/g, '')).toLocaleString();
         }
 
@@ -75,51 +89,57 @@
             return isNaN(dateObj.getTime()) ? d : dateObj.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
         }
 
-        async function loadTerminal() {
+        async function initTerminal() {
             try {
                 const res = await fetch(url, { cache: "no-store" });
                 const data = await res.json();
 
-                // 1. Transactions
-                const tList = document.getElementById('t-list');
+                // 1. Ticker Logic (Transactions)
+                const tickerText = (data.transactions || []).map(i => `${i.Buyer} [${formatNum(i.Volume_tC02)} tCO2]`).join(" // ");
+                document.getElementById('ticker-content').innerText += tickerText + " // " + tickerText;
+
+                // 2. Transactions Rendering
+                const tL = document.getElementById('t-list');
                 (data.transactions || []).forEach(item => {
-                    tList.innerHTML += `
+                    tL.innerHTML += `
                         <div class="card">
-                            <div class="meta">
-                                <span>DATE: ${cleanDate(item.Date)}</span>
-                                <span class="country-tag">REF: ${item.Sector || 'GCC'}</span>
-                            </div>
+                            <div class="meta"><span>${cleanDate(item.Date)}</span> <span class="country-tag">${item.Sector || 'GCC'}</span></div>
                             <span class="title">${item.Buyer || 'MARKET_PARTICIPANT'}</span>
                             <span class="stat">${formatNum(item.Volume_tC02)} tCO2 
-                                <span class="badge ${item.Status === 'Delivered' ? 'status-permanent' : 'status-verified'}">${item.Status || 'LOGGED'}</span>
+                                <span class="badge status-verified">${item.Status || 'LOGGED'}</span>
                             </span>
                         </div>`;
                 });
 
-                // 2. Projects
-                const pList = document.getElementById('p-list');
+                // 3. Projects Rendering
+                const pL = document.getElementById('p-list');
                 (data.projects || []).forEach(item => {
                     const isIndustrial = (item.Category || '').includes('Industrial') || (item.Tech_Pathway || '').includes('CCUS');
-                    const badgeClass = isIndustrial ? 'status-permanent' : 'status-decadal';
-                    const iconClass = isIndustrial ? 'icon-industrial' : 'icon-biospheric';
-                    
-                    pList.innerHTML += `
+                    pL.innerHTML += `
                         <div class="card" style="border-left-color: ${isIndustrial ? '#00bcff' : '#00ff66'};">
-                            <div class="meta">
-                                <span>DATE: ${cleanDate(item.Date)}</span>
-                                <span class="country-tag">${item.Country || 'GCC'}</span>
-                            </div>
+                            <div class="meta"><span>${cleanDate(item.Date)}</span> <span class="country-tag">${item.Country || 'GCC'}</span></div>
                             <span class="title">
-                                <span class="pathway-icon ${iconClass}"></span>
+                                <span class="pathway-icon ${isIndustrial ? 'icon-industrial' : 'icon-biospheric'}"></span>
                                 ${item.Project_Name || item.Entity || 'ASSET_INTEL'}
                             </span>
-                            <span class="badge ${badgeClass}">${isIndustrial ? 'PERMANENT' : 'DECADAL'}</span>
+                            <span class="badge ${isIndustrial ? 'status-permanent' : 'status-decadal'}">${isIndustrial ? 'PERMANENT' : 'DECADAL'}</span>
                             <div class="intel">${item.Tech_Pathway || item.Details || 'ANALYZING...'}</div>
                         </div>`;
                 });
-            } catch (e) { console.error(e); }
+
+                // 4. News Rendering
+                const nL = document.getElementById('n-list');
+                (data.news || []).slice(0, 10).forEach(item => {
+                    nL.innerHTML += `
+                        <div class="news-item">
+                            <span><strong>${cleanDate(item.Date)}</strong> // ${item.Headline || 'Market Signal Detected'}</span>
+                            <a href="${item.URL}" target="_blank">VIEW_RAW</a>
+                        </div>`;
+                });
+
+            } catch (e) { document.getElementById('status-tag').innerText = "SIGNAL_LOST"; }
         }
-        window.onload = loadTerminal;
+        window.onload = initTerminal;
     </script>
 </body>
 </html>
