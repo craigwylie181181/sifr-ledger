@@ -8,6 +8,7 @@
         :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; }
         body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
+        /* Ticker */
         .ticker-wrap { background: #000; border-bottom: 1px solid var(--neon); padding: 8px 0; overflow: hidden; white-space: nowrap; }
         .ticker { display: inline-block; animation: marquee 60s linear infinite; color: var(--neon); font-size: 11px; font-weight: bold; text-transform: uppercase; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
@@ -16,14 +17,14 @@
         .header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
         .logo { font-weight: bold; font-size: 28px; color: var(--neon); letter-spacing: 6px; }
 
+        /* Grid & Scrolling */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
         .scroll-box { max-height: 550px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
         h2 { font-size: 13px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
 
-        /* Industry & Flag Badges */
-        .industry-tag { font-size: 9px; padding: 2px 6px; border-radius: 2px; background: #222; color: #fff; margin-right: 8px; border: 1px solid #444; vertical-align: middle; }
+        /* Badges & Flags */
+        .industry-tag { color: #888; text-transform: uppercase; font-size: 9px; margin-left: 10px; }
         .flag-icon { width: 14px; height: 10px; margin-right: 5px; vertical-align: middle; border-radius: 1px; }
-
         .badge { font-size: 9px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
         .status-permanent { background: #0044ff; color: #fff; border: 1px solid #00bcff; }
         .status-decadal { background: #006622; color: #fff; border: 1px solid #00ff66; }
@@ -35,13 +36,13 @@
         .stat { color: var(--neon); font-size: 12px; font-weight: bold; margin-top: 4px; display: block; }
         .intel { color: #888; font-size: 11px; margin-top: 8px; border-top: 1px solid #222; padding-top: 8px; line-height: 1.4; }
 
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div class="ticker-wrap">
-        <div class="ticker" id="ticker-content">CONNECTING_UPLINK... // MARKET_STATUS: GCC_ACTIVE // </div>
+        <div class="ticker" id="ticker-content">CONNECTING_UPLINK... // MARKET_STATUS: REGIONAL_ACTIVE // </div>
     </div>
 
     <div class="container">
@@ -55,6 +56,7 @@
                 <h2>1. Transactions</h2>
                 <div class="scroll-box" id="t-list"></div>
             </div>
+            
             <div>
                 <h2>2. Projects</h2>
                 <div class="scroll-box" id="p-list"></div>
@@ -70,15 +72,6 @@
     <script>
         const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
 
-        // Map Industry to Colors
-        const sectorMap = {
-            'Energy': '#ff4400',
-            'Aviation': '#00bcff',
-            'Shipping': '#9944ff',
-            'Finance': '#00ffcc'
-        };
-
-        // Map Country names to ISO codes for Flag API
         const countryMap = {
             'UAE': 'ae', 'KSA': 'sa', 'Saudi Arabia': 'sa', 'Oman': 'om', 'Qatar': 'qa', 'Kuwait': 'kw', 'Bahrain': 'bh', 'USA': 'us', 'UK': 'gb'
         };
@@ -96,7 +89,6 @@
         function cleanDate(d) {
             if (!d || d === "" || d === "null" || d === "undefined") return "ACTIVE";
             const dateObj = new Date(d);
-            // Fix for 1970 issue (checks if date is earlier than year 2000)
             if (isNaN(dateObj.getTime()) || dateObj.getFullYear() < 2000) return "PENDING";
             return dateObj.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
         }
@@ -113,17 +105,16 @@
                 // 2. Transactions
                 const tL = document.getElementById('t-list');
                 (data.transactions || []).forEach(item => {
-                    const sectorColor = sectorMap[item.Sector] || '#444';
                     tL.innerHTML += `
                         <div class="card">
                             <div class="meta">
-                                <span>${cleanDate(item.Date)}</span>
-                                <span><img class="flag-icon" src="${getFlag(item.Country || 'UAE')}"> ${item.Country || 'GCC'}</span>
+                                <span>DATE: ${cleanDate(item.Date)}</span>
+                                <span>
+                                    <img class="flag-icon" src="${getFlag(item.Country)}"> ${item.Country || 'GCC'}
+                                    <span class="industry-tag">// ${item.Sector || 'General'}</span>
+                                </span>
                             </div>
-                            <span class="title">
-                                <span class="industry-tag" style="border-color:${sectorColor}">${item.Sector || 'General'}</span>
-                                ${item.Buyer || 'MARKET_PARTICIPANT'}
-                            </span>
+                            <span class="title">${item.Buyer || 'MARKET_PARTICIPANT'}</span>
                             <span class="stat">${formatNum(item.Volume_tC02)} tCO2</span>
                         </div>`;
                 });
@@ -135,7 +126,7 @@
                     pL.innerHTML += `
                         <div class="card" style="border-left-color: ${isIndustrial ? '#00bcff' : '#00ff66'};">
                             <div class="meta">
-                                <span>${cleanDate(item.Date)}</span>
+                                <span>DATE: ${cleanDate(item.Date)}</span>
                                 <span><img class="flag-icon" src="${getFlag(item.Country)}"> ${item.Country || 'GCC'}</span>
                             </div>
                             <span class="title">${item.Project_Name || item.Entity || 'ASSET_INTEL'}</span>
