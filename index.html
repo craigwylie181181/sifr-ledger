@@ -10,148 +10,97 @@
         :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; }
         body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
+        /* 1. Market Ticker */
         .ticker-wrap { background: #000; border-bottom: 1px solid var(--neon); padding: 10px 0; overflow: hidden; white-space: nowrap; }
         .ticker { display: inline-block; animation: marquee 50s linear infinite; color: var(--neon); font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .price-up { color: #00ff66; margin-left: 4px; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         .container { padding: 20px; max-width: 1400px; margin: 0 auto; }
         .header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
         .logo { font-weight: bold; font-size: 28px; color: var(--neon); letter-spacing: 6px; }
 
-        /* Analytics Grid */
+        /* 2. Analytics Hub */
         .analytics-grid { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 20px; margin-bottom: 30px; background: #0a0a0a; padding: 20px; border: 1px solid var(--border); }
-        .chart-container { height: 250px; position: relative; }
+        .chart-container { height: 260px; position: relative; }
         
-        /* Layout */
+        /* 3. Grid & Scrolling */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
         .scroll-box { max-height: 450px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
-        h2 { font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
+        h2 { font-size: 13px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
 
-        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-left: 3px solid #333; }
+        /* 4. Forensic Cards */
+        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-left: 3px solid #333; position: relative; }
         .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; font-weight: bold; }
         .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; margin: 5px 0; }
         .stat { color: var(--neon); font-size: 12px; font-weight: bold; }
-        .badge { font-size: 9px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; font-weight: bold; }
-        .status-permanent { background: #0044ff; color: #fff; }
-        .status-decadal { background: #006622; color: #fff; }
+        
+        .badge { font-size: 9px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
+        .status-permanent { background: #0044ff; color: #fff; border: 1px solid #00bcff; }
+        .status-decadal { background: #006622; color: #fff; border: 1px solid #00ff66; }
+        .sector-badge { font-size: 9px; padding: 1px 6px; border: 1px solid #444; color: #888; text-transform: uppercase; font-weight: bold; margin-left: 10px; }
+        .flag-icon { width: 14px; height: 10px; margin-right: 5px; vertical-align: middle; border-radius: 1px; }
+
+        /* News Scroll */
+        .news-scroll { max-height: 350px; overflow-y: auto; border-top: 1px solid #222; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div class="ticker-wrap">
-        <div class="ticker">
-            GCC_CARBON_INDEX: $24.80 <span style="color:#00ff66;">▲ 1.2%</span> // 
-            SAUDI_RVCMC_VOLUMES: 2.2M tCO2 // 
-            UAE_STRATEGIC_RESERVE: ACTIVE // 
-            OMAN_BLUE_CARBON_PILOT: PHASE_1 //
+        <div class="ticker" id="ticker-content">
+            CORSIA_PHASE_1: $18.90 <span class="price-up">▲ 2.1%</span> // 
+            NATURE_BASED (NBO): $4.12 <span class="price-up">▲ 0.5%</span> // 
+            TECH_REMOVAL (CORC): $148.00 <span class="price-up">▲ 1.4%</span> // 
+            GCC_EQUIVALENT: $22.60 <span class="price-up">▲ 0.9%</span> // 
+            SIFR_INDEX: $29.45 <span class="price-up">▲ 3.8%</span> //
         </div>
     </div>
 
     <div class="container">
         <div class="header">
             <div class="logo">SIFR LEDGER</div>
-            <div style="font-size: 10px; color: var(--neon);">● GEOSPATIAL_INTEL: ACTIVE</div>
+            <div style="font-size: 10px; color: var(--neon);">● LIVE_HEATMAP: CONNECTED</div>
         </div>
 
-        <h2>0. Regional Intelligence Hub</h2>
+        <h2>0. Portfolio Intelligence</h2>
         <div class="analytics-grid">
-            <div class="chart-container">
-                <canvas id="pathwayChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="volumeChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="gccMap"></canvas>
-            </div>
+            <div class="chart-container"><canvas id="pathwayChart"></canvas></div>
+            <div class="chart-container"><canvas id="volumeChart"></canvas></div>
+            <div class="chart-container"><canvas id="gccMap"></canvas></div>
         </div>
 
         <div class="grid">
-            <div><h2>1. Transactions</h2><div class="scroll-box" id="t-list"></div></div>
-            <div><h2>2. Projects</h2><div class="scroll-box" id="p-list"></div></div>
+            <div>
+                <h2>1. Transactions</h2>
+                <div class="scroll-box" id="t-list"></div>
+            </div>
+            <div>
+                <h2>2. Projects</h2>
+                <div class="scroll-box" id="p-list"></div>
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid #333; padding-top: 20px;">
+            <h2>3. Latest News</h2>
+            <div class="news-scroll" id="n-list"></div>
         </div>
     </div>
 
     <script>
         const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
+        const countryISO = { 'UAE': '784', 'KSA': '682', 'Saudi Arabia': '682', 'Oman': '512', 'Qatar': '634', 'Kuwait': '414', 'Bahrain': '048' };
+
+        function formatNum(n) { return Number(n.toString().replace(/,/g, '')).toLocaleString(); }
+        function cleanDate(d) {
+            if (!d || d === "" || d === "null") return "ACTIVE";
+            const dateObj = new Date(d);
+            if (isNaN(dateObj.getTime()) || dateObj.getFullYear() < 2000) return d.toString().toUpperCase();
+            return dateObj.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
+        }
 
         async function init() {
             const res = await fetch(url);
             const data = await res.json();
             
-            // --- 1. DATA AGGREGATION ---
-            const countryCounts = {};
-            (data.projects || []).forEach(p => {
-                const c = p.Country || 'Other';
-                countryCounts[c] = (countryCounts[c] || 0) + 1;
-            });
-
-            // --- 2. PATHWAY DONUT ---
-            new Chart(document.getElementById('pathwayChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Permanent', 'Decadal'],
-                    datasets: [{ data: [12, 8], backgroundColor: ['#00bcff', '#00ff66'], borderWidth: 0 }]
-                },
-                options: { cutout: '80%', plugins: { title: { display: true, text: 'TECH PATHWAY', color: '#fff' }, legend: { display: false } } }
-            });
-
-            // --- 3. VOLUME BARS ---
-            new Chart(document.getElementById('volumeChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['UAE', 'KSA', 'OMN', 'QAT'],
-                    datasets: [{ label: 'Projects', data: [countryCounts['UAE'] || 0, countryCounts['KSA'] || 0, countryCounts['Oman'] || 0, countryCounts['Qatar'] || 0], backgroundColor: '#00ffcc' }]
-                },
-                options: { plugins: { title: { display: true, text: 'ASSET DISTRIBUTION', color: '#fff' }, legend: { display: false } }, scales: { y: { display: false }, x: { ticks: { color: '#555' } } } }
-            });
-
-            // --- 4. GCC MAP (GEO CHOROPLETH) ---
-            // Fetching a simplified world map and filtering for GCC
-            fetch('https://unpkg.com/world-atlas/countries-50m.json').then((r) => r.json()).then((downloadedData) => {
-                const countries = ChartGeo.topojson.feature(downloadedData, downloadedData.objects.countries).features;
-                const gccCodes = ['784', '682', '512', '634', '414', '048']; // ISO codes for UAE, KSA, OMN, QAT, KWT, BHR
-                const gccFeatures = countries.filter(d => gccCodes.includes(d.id));
-
-                new Chart(document.getElementById('gccMap'), {
-                    type: 'choropleth',
-                    data: {
-                        labels: gccFeatures.map(d => d.properties.name),
-                        datasets: [{
-                            label: 'Concentration',
-                            outline: gccFeatures,
-                            data: gccFeatures.map(d => ({ feature: d, value: Math.random() * 10 })), // Mock intensity for demo
-                            backgroundColor: (context) => {
-                                if (!context.raw) return '#111';
-                                return `rgba(0, 255, 204, ${context.raw.value / 10})`;
-                            }
-                        }]
-                    },
-                    options: {
-                        showOutline: true,
-                        showGraticule: false,
-                        plugins: { 
-                            legend: { display: false },
-                            title: { display: true, text: 'GEOSPATIAL INTENSITY', color: '#fff' }
-                        },
-                        scales: { projection: { projection: 'mercator' } }
-                    }
-                });
-            });
-
-            // --- 5. RENDER LISTS ---
-            const tL = document.getElementById('t-list');
-            (data.transactions || []).forEach(item => {
-                tL.innerHTML += `<div class="card"><div class="meta"><span>${item.Date || '2026'}</span></div><span class="title">${item.Buyer}</span><span class="stat">${item.Volume_tC02} tCO2</span></div>`;
-            });
-
-            const pL = document.getElementById('p-list');
-            (data.projects || []).forEach(item => {
-                const isInd = (item.Category || '').includes('Industrial');
-                pL.innerHTML += `<div class="card" style="border-left-color: ${isInd ? '#00bcff' : '#00ff66'}"><div class="meta"><span>${item.Country}</span></div><span class="title">${item.Project_Name || item.Entity}</span><span class="badge ${isInd ? 'status-permanent' : 'status-decadal'}">${isInd ? 'Permanent' : 'Decadal'}</span></div>`;
-            });
-        }
-        init();
-    </script>
-</body>
-</html>
+            // --- 1. DATA LOGIC ---
