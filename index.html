@@ -8,7 +8,6 @@
         :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; }
         body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
-        /* 1. Market Ticker */
         .ticker-wrap { background: #000; border-bottom: 1px solid var(--neon); padding: 8px 0; overflow: hidden; white-space: nowrap; }
         .ticker { display: inline-block; animation: marquee 60s linear infinite; color: var(--neon); font-size: 11px; font-weight: bold; text-transform: uppercase; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
@@ -17,44 +16,38 @@
         .header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
         .logo { font-weight: bold; font-size: 28px; color: var(--neon); letter-spacing: 6px; }
 
-        /* 2. Main Grid & Scrolling */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
-        .scroll-box { max-height: 500px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
+        .scroll-box { max-height: 550px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
         h2 { font-size: 13px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
 
-        /* 3. Status Badges & Icons */
+        /* Industry & Flag Badges */
+        .industry-tag { font-size: 9px; padding: 2px 6px; border-radius: 2px; background: #222; color: #fff; margin-right: 8px; border: 1px solid #444; vertical-align: middle; }
+        .flag-icon { width: 14px; height: 10px; margin-right: 5px; vertical-align: middle; border-radius: 1px; }
+
         .badge { font-size: 9px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
         .status-permanent { background: #0044ff; color: #fff; border: 1px solid #00bcff; }
         .status-decadal { background: #006622; color: #fff; border: 1px solid #00ff66; }
-        .status-verified { color: var(--neon); border: 1px solid var(--neon); }
-        .pathway-icon { display: inline-block; width: 10px; height: 10px; margin-right: 8px; border-radius: 50%; }
-        .icon-industrial { background: #ffaa00; box-shadow: 0 0 5px #ffaa00; }
-        .icon-biospheric { background: #00ff66; box-shadow: 0 0 5px #00ff66; }
-
-        /* 4. Cards */
+        
+        /* Cards */
         .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; position: relative; border-radius: 2px; border-left: 3px solid #333; }
-        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; margin-bottom: 8px; font-weight: bold; }
-        .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; }
+        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; margin-bottom: 8px; font-weight: bold; align-items: center; }
+        .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 4px; }
         .stat { color: var(--neon); font-size: 12px; font-weight: bold; margin-top: 4px; display: block; }
         .intel { color: #888; font-size: 11px; margin-top: 8px; border-top: 1px solid #222; padding-top: 8px; line-height: 1.4; }
-        .country-tag { color: #aaa; background: #222; padding: 1px 4px; font-size: 9px; }
 
-        /* 5. News Feed Section */
-        .news-feed { border-top: 1px solid #333; padding-top: 20px; }
-        .news-item { font-size: 12px; color: #aaa; padding: 10px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
-        .news-item a { color: var(--neon); text-decoration: none; font-size: 10px; border: 1px solid var(--neon); padding: 2px 5px; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
     </style>
 </head>
 <body>
 
     <div class="ticker-wrap">
-        <div class="ticker" id="ticker-content">CONNECTING TO SIFR_DATA_UPLINK... // GCC MARKET INDEX: STABLE // </div>
+        <div class="ticker" id="ticker-content">CONNECTING_UPLINK... // MARKET_STATUS: GCC_ACTIVE // </div>
     </div>
 
     <div class="container">
         <div class="header">
             <div class="logo">SIFR LEDGER</div>
-            <div id="status-tag" style="font-size: 10px; color: var(--neon);">● SIGNAL_STABLE</div>
+            <div style="font-size: 10px; color: var(--neon);">● DATA_SYNC: REALTIME</div>
         </div>
 
         <div class="grid">
@@ -62,14 +55,13 @@
                 <h2>1. Transactions</h2>
                 <div class="scroll-box" id="t-list"></div>
             </div>
-            
             <div>
                 <h2>2. Projects</h2>
                 <div class="scroll-box" id="p-list"></div>
             </div>
         </div>
 
-        <div class="news-feed">
+        <div style="border-top: 1px solid #333; padding-top: 20px;">
             <h2>3. Raw News Intelligence</h2>
             <div id="n-list"></div>
         </div>
@@ -78,68 +70,92 @@
     <script>
         const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
 
+        // Map Industry to Colors
+        const sectorMap = {
+            'Energy': '#ff4400',
+            'Aviation': '#00bcff',
+            'Shipping': '#9944ff',
+            'Finance': '#00ffcc'
+        };
+
+        // Map Country names to ISO codes for Flag API
+        const countryMap = {
+            'UAE': 'ae', 'KSA': 'sa', 'Saudi Arabia': 'sa', 'Oman': 'om', 'Qatar': 'qa', 'Kuwait': 'kw', 'Bahrain': 'bh', 'USA': 'us', 'UK': 'gb'
+        };
+
+        function getFlag(name) {
+            const code = countryMap[name] || 'un';
+            return `https://flagcdn.com/w20/${code}.png`;
+        }
+
         function formatNum(n) {
             if (!n) return "0";
             return Number(n.toString().replace(/,/g, '')).toLocaleString();
         }
 
         function cleanDate(d) {
-            if (!d || d === "null") return "ACTIVE";
+            if (!d || d === "" || d === "null" || d === "undefined") return "ACTIVE";
             const dateObj = new Date(d);
-            return isNaN(dateObj.getTime()) ? d : dateObj.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
+            // Fix for 1970 issue (checks if date is earlier than year 2000)
+            if (isNaN(dateObj.getTime()) || dateObj.getFullYear() < 2000) return "PENDING";
+            return dateObj.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
         }
 
-        async function initTerminal() {
+        async function init() {
             try {
                 const res = await fetch(url, { cache: "no-store" });
                 const data = await res.json();
 
-                // 1. Ticker Logic (Transactions)
-                const tickerText = (data.transactions || []).map(i => `${i.Buyer} [${formatNum(i.Volume_tC02)} tCO2]`).join(" // ");
-                document.getElementById('ticker-content').innerText += tickerText + " // " + tickerText;
+                // 1. Ticker
+                const tickerText = (data.transactions || []).map(i => `${i.Buyer} [${formatNum(i.Volume_tC02)}]`).join(" // ");
+                document.getElementById('ticker-content').innerText += tickerText;
 
-                // 2. Transactions Rendering
+                // 2. Transactions
                 const tL = document.getElementById('t-list');
                 (data.transactions || []).forEach(item => {
+                    const sectorColor = sectorMap[item.Sector] || '#444';
                     tL.innerHTML += `
                         <div class="card">
-                            <div class="meta"><span>${cleanDate(item.Date)}</span> <span class="country-tag">${item.Sector || 'GCC'}</span></div>
-                            <span class="title">${item.Buyer || 'MARKET_PARTICIPANT'}</span>
-                            <span class="stat">${formatNum(item.Volume_tC02)} tCO2 
-                                <span class="badge status-verified">${item.Status || 'LOGGED'}</span>
+                            <div class="meta">
+                                <span>${cleanDate(item.Date)}</span>
+                                <span><img class="flag-icon" src="${getFlag(item.Country || 'UAE')}"> ${item.Country || 'GCC'}</span>
+                            </div>
+                            <span class="title">
+                                <span class="industry-tag" style="border-color:${sectorColor}">${item.Sector || 'General'}</span>
+                                ${item.Buyer || 'MARKET_PARTICIPANT'}
                             </span>
+                            <span class="stat">${formatNum(item.Volume_tC02)} tCO2</span>
                         </div>`;
                 });
 
-                // 3. Projects Rendering
+                // 3. Projects
                 const pL = document.getElementById('p-list');
                 (data.projects || []).forEach(item => {
                     const isIndustrial = (item.Category || '').includes('Industrial') || (item.Tech_Pathway || '').includes('CCUS');
                     pL.innerHTML += `
                         <div class="card" style="border-left-color: ${isIndustrial ? '#00bcff' : '#00ff66'};">
-                            <div class="meta"><span>${cleanDate(item.Date)}</span> <span class="country-tag">${item.Country || 'GCC'}</span></div>
-                            <span class="title">
-                                <span class="pathway-icon ${isIndustrial ? 'icon-industrial' : 'icon-biospheric'}"></span>
-                                ${item.Project_Name || item.Entity || 'ASSET_INTEL'}
-                            </span>
+                            <div class="meta">
+                                <span>${cleanDate(item.Date)}</span>
+                                <span><img class="flag-icon" src="${getFlag(item.Country)}"> ${item.Country || 'GCC'}</span>
+                            </div>
+                            <span class="title">${item.Project_Name || item.Entity || 'ASSET_INTEL'}</span>
                             <span class="badge ${isIndustrial ? 'status-permanent' : 'status-decadal'}">${isIndustrial ? 'PERMANENT' : 'DECADAL'}</span>
                             <div class="intel">${item.Tech_Pathway || item.Details || 'ANALYZING...'}</div>
                         </div>`;
                 });
 
-                // 4. News Rendering
+                // 4. News
                 const nL = document.getElementById('n-list');
                 (data.news || []).slice(0, 10).forEach(item => {
                     nL.innerHTML += `
-                        <div class="news-item">
-                            <span><strong>${cleanDate(item.Date)}</strong> // ${item.Headline || 'Market Signal Detected'}</span>
-                            <a href="${item.URL}" target="_blank">VIEW_RAW</a>
+                        <div style="font-size:12px; color:#aaa; padding:10px; border-bottom:1px solid #222; display:flex; justify-content:space-between;">
+                            <span><strong>${cleanDate(item.Date)}</strong> // ${item.Headline || 'Signal'}</span>
+                            <a href="${item.URL}" target="_blank" style="color:var(--neon); font-size:10px; text-decoration:none; border:1px solid var(--neon); padding:2px 5px;">VIEW</a>
                         </div>`;
                 });
-
-            } catch (e) { document.getElementById('status-tag').innerText = "SIGNAL_LOST"; }
+            } catch (e) { console.error(e); }
         }
-        window.onload = initTerminal;
+        window.onload = init;
     </script>
 </body>
 </html>
