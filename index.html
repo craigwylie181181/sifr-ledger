@@ -23,14 +23,15 @@
         .scroll-box { max-height: 550px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
         h2 { font-size: 13px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
 
-        /* Badges & Flags */
-        .sector-badge { display: inline-flex; align-items: center; font-size: 9px; padding: 2px 8px; border-radius: 2px; margin-left: 10px; border: 1px solid transparent; text-transform: uppercase; font-weight: bold; }
-        .flag-icon { width: 14px; height: 10px; margin-right: 5px; vertical-align: middle; border-radius: 1px; }
+        /* Clean Sector Badges (No Dots) */
+        .sector-badge { display: inline-flex; align-items: center; font-size: 9px; padding: 2px 8px; border-radius: 2px; margin-left: 10px; border: 1px solid transparent; text-transform: uppercase; font-weight: bold; line-height: 1; }
         
+        .flag-icon { width: 14px; height: 10px; margin-right: 5px; vertical-align: middle; border-radius: 1px; }
         .badge { font-size: 9px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
         .status-permanent { background: #0044ff; color: #fff; border: 1px solid #00bcff; }
         .status-decadal { background: #006622; color: #fff; border: 1px solid #00ff66; }
         
+        /* Cards */
         .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; position: relative; border-radius: 2px; border-left: 3px solid #333; }
         .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; margin-bottom: 8px; font-weight: bold; align-items: center; }
         .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 4px; }
@@ -42,11 +43,12 @@
 
     <div class="ticker-wrap">
         <div class="ticker" id="ticker-content">
-            CORSIA_PHASE_1: $18.40 <span class="price-up">▲ 2.1%</span> // 
-            NATURE_BASED (NBO): $4.15 <span class="price-down">▼ 0.8%</span> // 
-            TECH_REMOVAL (CORC): $142.00 <span class="price-up">▲ 0.5%</span> // 
-            GCC_EQUIVALENT: $22.10 <span class="price-up">▲ 1.4%</span> // 
-            SIFR_INDEX: $28.90 <span class="price-up">▲ 3.2%</span> //
+            CORSIA_PHASE_1: $18.65 <span class="price-up">▲ 2.4%</span> // 
+            NATURE_BASED (NBO): $4.10 <span class="price-down">▼ 1.2%</span> // 
+            TECH_REMOVAL (CORC): $145.50 <span class="price-up">▲ 0.8%</span> // 
+            GCC_EQUIVALENT: $22.40 <span class="price-up">▲ 1.6%</span> // 
+            SIFR_INDEX: $29.10 <span class="price-up">▲ 3.5%</span> //
+            REDD+: $6.20 <span class="price-down">▼ 0.3%</span> //
         </div>
     </div>
 
@@ -101,7 +103,7 @@
         function cleanDate(d) {
             if (!d || d === "" || d === "null") return "ACTIVE";
             const dateObj = new Date(d);
-            // Fallback to raw text if it's a 1970 error or invalid
+            // If it's the 1970 glitch or just a manual text year, return exactly what's in the sheet
             if (isNaN(dateObj.getTime()) || dateObj.getFullYear() < 2000) return d.toString().toUpperCase();
             return dateObj.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
         }
@@ -111,6 +113,7 @@
                 const res = await fetch(url, { cache: "no-store" });
                 const data = await res.json();
 
+                // Sort News by Date (Descending)
                 const sortedNews = (data.news || []).sort((a, b) => new Date(b.Date) - new Date(a.Date));
 
                 // 2. Transactions
