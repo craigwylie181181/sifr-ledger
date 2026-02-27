@@ -8,7 +8,6 @@
         :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; }
         body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
-        /* Ticker */
         .ticker-wrap { background: #000; border-bottom: 1px solid var(--neon); padding: 8px 0; overflow: hidden; white-space: nowrap; }
         .ticker { display: inline-block; animation: marquee 60s linear infinite; color: var(--neon); font-size: 11px; font-weight: bold; text-transform: uppercase; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
@@ -17,19 +16,19 @@
         .header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
         .logo { font-weight: bold; font-size: 28px; color: var(--neon); letter-spacing: 6px; }
 
-        /* Grid & Scrolling */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
         .scroll-box { max-height: 550px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
         h2 { font-size: 13px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
 
-        /* Badges & Flags */
-        .industry-tag { color: #888; text-transform: uppercase; font-size: 9px; margin-left: 10px; }
+        /* Badges & Icons */
+        .sector-badge { display: inline-flex; align-items: center; font-size: 9px; padding: 1px 6px; border-radius: 2px; margin-left: 10px; border: 1px solid transparent; text-transform: uppercase; }
+        .dot { height: 6px; width: 6px; border-radius: 50%; margin-right: 5px; display: inline-block; }
+        
         .flag-icon { width: 14px; height: 10px; margin-right: 5px; vertical-align: middle; border-radius: 1px; }
         .badge { font-size: 9px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
         .status-permanent { background: #0044ff; color: #fff; border: 1px solid #00bcff; }
         .status-decadal { background: #006622; color: #fff; border: 1px solid #00ff66; }
         
-        /* Cards */
         .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; position: relative; border-radius: 2px; border-left: 3px solid #333; }
         .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; margin-bottom: 8px; font-weight: bold; align-items: center; }
         .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 4px; }
@@ -42,7 +41,7 @@
 <body>
 
     <div class="ticker-wrap">
-        <div class="ticker" id="ticker-content">CONNECTING_UPLINK... // MARKET_STATUS: REGIONAL_ACTIVE // </div>
+        <div class="ticker" id="ticker-content">CONNECTING_UPLINK... // SIFR_DATA_SYNC: ACTIVE // </div>
     </div>
 
     <div class="container">
@@ -56,7 +55,6 @@
                 <h2>1. Transactions</h2>
                 <div class="scroll-box" id="t-list"></div>
             </div>
-            
             <div>
                 <h2>2. Projects</h2>
                 <div class="scroll-box" id="p-list"></div>
@@ -64,7 +62,7 @@
         </div>
 
         <div style="border-top: 1px solid #333; padding-top: 20px;">
-            <h2>3. Raw News Intelligence</h2>
+            <h2>3. Latest News</h2>
             <div id="n-list"></div>
         </div>
     </div>
@@ -74,6 +72,14 @@
 
         const countryMap = {
             'UAE': 'ae', 'KSA': 'sa', 'Saudi Arabia': 'sa', 'Oman': 'om', 'Qatar': 'qa', 'Kuwait': 'kw', 'Bahrain': 'bh', 'USA': 'us', 'UK': 'gb'
+        };
+
+        const sectorConfig = {
+            'Aviation': { color: '#00bcff', dot: '#00bcff' },
+            'Energy': { color: '#ff4400', dot: '#ff4400' },
+            'Shipping': { color: '#9944ff', dot: '#9944ff' },
+            'Finance': { color: '#00ffcc', dot: '#00ffcc' },
+            'Default': { color: '#555', dot: '#555' }
         };
 
         function getFlag(name) {
@@ -105,13 +111,17 @@
                 // 2. Transactions
                 const tL = document.getElementById('t-list');
                 (data.transactions || []).forEach(item => {
+                    const sec = sectorConfig[item.Sector] || sectorConfig['Default'];
                     tL.innerHTML += `
                         <div class="card">
                             <div class="meta">
                                 <span>DATE: ${cleanDate(item.Date)}</span>
                                 <span>
-                                    <img class="flag-icon" src="${getFlag(item.Country)}"> ${item.Country || 'GCC'}
-                                    <span class="industry-tag">// ${item.Sector || 'General'}</span>
+                                    <img class="flag-icon" src="${getFlag(item.Country)}"> ${item.Country || ''}
+                                    <span class="sector-badge" style="border-color: ${sec.color}; color: ${sec.color};">
+                                        <span class="dot" style="background-color: ${sec.dot};"></span>
+                                        ${item.Sector || 'GENERAL'}
+                                    </span>
                                 </span>
                             </div>
                             <span class="title">${item.Buyer || 'MARKET_PARTICIPANT'}</span>
@@ -127,7 +137,7 @@
                         <div class="card" style="border-left-color: ${isIndustrial ? '#00bcff' : '#00ff66'};">
                             <div class="meta">
                                 <span>DATE: ${cleanDate(item.Date)}</span>
-                                <span><img class="flag-icon" src="${getFlag(item.Country)}"> ${item.Country || 'GCC'}</span>
+                                <span><img class="flag-icon" src="${getFlag(item.Country)}"> ${item.Country || ''}</span>
                             </div>
                             <span class="title">${item.Project_Name || item.Entity || 'ASSET_INTEL'}</span>
                             <span class="badge ${isIndustrial ? 'status-permanent' : 'status-decadal'}">${isIndustrial ? 'PERMANENT' : 'DECADAL'}</span>
@@ -135,7 +145,7 @@
                         </div>`;
                 });
 
-                // 4. News
+                // 4. Latest News
                 const nL = document.getElementById('n-list');
                 (data.news || []).slice(0, 10).forEach(item => {
                     nL.innerHTML += `
