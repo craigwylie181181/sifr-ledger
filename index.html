@@ -6,49 +6,64 @@
     <title>Sifr Ledger | Terminal</title>
     <style>
         body { background-color: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', Courier, monospace; padding: 20px; }
-        h1, h2 { color: #00ffcc; text-transform: uppercase; letter-spacing: 2px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { background: #111; border: 1px solid #333; padding: 15px; margin-bottom: 10px; border-left: 4px solid #00ffcc; }
-        .label { color: #666; font-size: 10px; }
-        .val { color: #fff; font-weight: bold; }
-        #status { color: #00ffcc; margin-bottom: 20px; border: 1px dashed #00ffcc; padding: 10px; display: inline-block; }
+        h1, h2 { color: #00ffcc; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .card { background: #111; border: 1px solid #333; padding: 15px; margin-bottom: 15px; border-left: 4px solid #00ffcc; }
+        .label { color: #666; font-size: 10px; text-transform: uppercase; }
+        .val { color: #fff; font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px; }
+        #status { color: #00ffcc; border: 1px dashed #00ffcc; padding: 10px; margin-bottom: 20px; display: inline-block; }
     </style>
 </head>
 <body>
 
     <h1>Sifr Ledger Terminal</h1>
-    <div id="status">INITIATING DATA FETCH...</div>
+    <div id="status">ESTABLISHING DATA CONNECTION...</div>
 
     <div class="grid">
         <div><h2>Transactions</h2><div id="t-list"></div></div>
-        <div><h2>Projects</h2><div id="p-list"></div></div>
+        <div><h2>Project Intelligence</h2><div id="p-list"></div></div>
     </div>
 
     <script>
-        const url = "https://script.google.com/macros/s/AKfycbxR038g15O7CKEPd9Q0u3lPFoO4RFWllVIUIC4lFhUDfZWXht6wyuD1YN73uEKTfbug/exec";
+        const apiUrl = "https://script.google.com/macros/s/AKfycbxR038g15O7CKEPd9Q0u3lPFoO4RFWllVIUIC4lFhUDfZWXht6wyuD1YN73uEKTfbug/exec";
 
-        async function load() {
+        async function loadData() {
             try {
-                // The 'cache: no-store' forces the browser to get fresh data
-                const res = await fetch(url, { cache: "no-store" });
-                const data = await res.json();
+                const response = await fetch(apiUrl, { cache: "no-store" });
+                const data = await response.json();
                 document.getElementById('status').style.display = 'none';
 
-                const tL = document.getElementById('t-list');
-                (data.transactions || []).forEach(i => {
-                    tL.innerHTML += `<div class="card"><div class="label">BUYER</div><div class="val">${i.Buyer || 'Market'}</div><div>${i.Volume_tC02 || '0'} tCO2</div></div>`;
+                // 1. Render Transactions
+                const tList = document.getElementById('t-list');
+                (data.transactions || []).forEach(item => {
+                    tList.innerHTML += `
+                        <div class="card">
+                            <span class="label">DATE</span><span class="val">${item.Date || '2023'}</span>
+                            <span class="label">BUYER</span><span class="val">${item.Buyer || 'Market'}</span>
+                            <div style="font-size:12px; color:#bbb;">${item.Volume_tC02 || '0'} tCO2</div>
+                        </div>`;
                 });
 
-                const pL = document.getElementById('p-list');
-                (data.projects || []).forEach(i => {
-                    const name = i.Project_Name || i.Entity || "Intelligence Update";
-                    pL.innerHTML += `<div class="card"><div class="label">ENTITY</div><div class="val">${name}</div><div>${i.Tech_Pathway || i.Details || 'Processing...'}</div></div>`;
+                // 2. Render Projects (Smart Matching for Headers)
+                const pList = document.getElementById('p-list');
+                (data.projects || []).forEach(item => {
+                    // This checks for "Project_Name" OR "Entity"
+                    const name = item.Project_Name || item.Entity || "Asset Intelligence";
+                    // This checks for "Tech_Pathway" OR "Details"
+                    const desc = item.Tech_Pathway || item.Details || "Analyzing technical capacity...";
+                    
+                    pList.innerHTML += `
+                        <div class="card" style="border-left-color: #ffaa00;">
+                            <span class="label">DATE</span><span class="val">${item.Date || 'ACTIVE'}</span>
+                            <span class="label">PROJECT</span><span class="val">${name}</span>
+                            <div style="font-size:12px; color:#bbb; margin-top:5px;">${desc}</div>
+                        </div>`;
                 });
             } catch (e) {
-                document.getElementById('status').innerText = "ERROR: DATABASE NOT RESPONDING";
+                document.getElementById('status').innerText = "OFFLINE: CHECK APPS SCRIPT PERMISSIONS";
             }
         }
-        window.onload = load;
+        window.onload = loadData;
     </script>
 </body>
 </html>
