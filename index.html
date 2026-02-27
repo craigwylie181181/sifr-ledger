@@ -3,44 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIFR LEDGER | Intelligence Terminal</title>
+    <title>SIFR LEDGER | Forensic Terminal</title>
     <style>
         :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; }
         body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
-        /* Top Ticker Bar */
-        .ticker-wrap { background: #000; border-bottom: 1px solid var(--neon); padding: 10px 0; overflow: hidden; white-space: nowrap; }
-        .ticker { display: inline-block; animation: marquee 30s linear infinite; color: var(--neon); font-size: 12px; font-weight: bold; }
+        /* Market Ticker */
+        .ticker-wrap { background: #000; border-bottom: 1px solid var(--neon); padding: 8px 0; overflow: hidden; }
+        .ticker { display: inline-block; white-space: nowrap; animation: marquee 40s linear infinite; color: var(--neon); font-size: 11px; font-weight: bold; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        .container { padding: 25px; }
-        .header { display: flex; justify-content: space-between; border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 30px; }
-        .logo { font-weight: bold; font-size: 22px; color: var(--neon); letter-spacing: 5px; }
+        .container { padding: 20px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 25px; }
+        .logo { font-weight: bold; font-size: 20px; color: var(--neon); letter-spacing: 4px; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        h2 { font-size: 13px; color: #555; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 40px; }
+        h2 { font-size: 12px; color: #555; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
 
-        /* Forensic Cards */
-        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 15px; position: relative; border-radius: 2px; }
+        /* Cards */
+        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; position: relative; }
         .card::before { content: ""; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--neon); }
-        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #444; margin-bottom: 10px; }
-        .title { color: #fff; font-size: 15px; font-weight: bold; text-transform: uppercase; display: block; }
-        .stat { color: var(--neon); font-size: 12px; margin-top: 5px; display: block; }
-        .intel { color: #888; font-size: 12px; margin-top: 10px; border-top: 1px solid #222; padding-top: 10px; line-height: 1.4; }
+        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #444; margin-bottom: 8px; }
+        .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; }
+        .stat { color: var(--neon); font-size: 11px; margin-top: 4px; display: block; }
+        .intel { color: #888; font-size: 11px; margin-top: 8px; border-top: 1px solid #222; padding-top: 8px; line-height: 1.4; }
 
-        #loading { color: var(--neon); font-size: 12px; padding: 10px; display: inline-block; }
+        /* News Section */
+        .news-section { border-top: 1px solid #333; padding-top: 20px; }
+        .news-item { font-size: 12px; color: #aaa; padding: 10px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
+        .news-item a { color: var(--neon); text-decoration: none; }
+        .news-item:hover { background: #111; }
+
+        #status { color: var(--neon); font-size: 11px; }
     </style>
 </head>
 <body>
 
     <div class="ticker-wrap">
-        <div class="ticker" id="ticker-content">LOADING MARKET DATA... // GCC CARBON INDEX: 24.50 (+1.2%) // ADNOC CCUS EXPANSION IN PROGRESS // SAUDI RVCMC AUCTION COMPLETE //</div>
+        <div class="ticker" id="ticker-content">INITIALIZING MARKET DATA FEED... </div>
     </div>
 
     <div class="container">
         <div class="header">
-            <div class="logo">SIFR LEDGER v1.0</div>
-            <div id="loading">● UPLINK ACTIVE</div>
+            <div class="logo">SIFR LEDGER // terminal_v1.0</div>
+            <div id="status">● UPLINK_STABLE</div>
         </div>
 
         <div class="grid">
@@ -53,15 +59,20 @@
                 <div id="p-list"></div>
             </div>
         </div>
+
+        <div class="news-section">
+            <h2>[03] RAW_INTELLIGENCE_FEED</h2>
+            <div id="n-list"></div>
+        </div>
     </div>
 
     <script>
         const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
 
-        function formatDate(raw) {
+        function cleanDate(raw) {
             if (!raw || raw === "null") return "ACTIVE";
             const d = new Date(raw);
-            if (isNaN(d.getTime())) return raw; // Returns "June 2023" as-is
+            if (isNaN(d.getTime())) return raw; 
             return d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
         }
 
@@ -69,38 +80,47 @@
             try {
                 const res = await fetch(url, { cache: "no-store" });
                 const data = await res.json();
-                document.getElementById('loading').innerText = "● SIGNAL SECURE";
 
-                // Update Ticker with Buyer Names
-                const tickerText = (data.transactions || []).map(i => `${i.Buyer} [${i.Volume_tC02} tCO2]`).join(" // ");
-                document.getElementById('ticker-content').innerText = tickerText + " // " + tickerText;
+                // 1. Marquee Ticker (From Transactions)
+                const tickerContent = (data.transactions || []).map(i => `${i.Buyer} [${i.Volume_tC02 || 'N/A'}]`).join(" // ");
+                document.getElementById('ticker-content').innerText = tickerContent + " // " + tickerContent;
 
-                // Render Transactions
+                // 2. Transactions
                 const tL = document.getElementById('t-list');
                 (data.transactions || []).forEach(item => {
                     tL.innerHTML += `
                         <div class="card">
-                            <div class="meta"><span>DATE: ${formatDate(item.Date)}</span> <span>REF: ${item.Sector || 'GCC'}</span></div>
+                            <div class="meta"><span>DATE: ${cleanDate(item.Date)}</span> <span>REF: ${item.Sector || 'GCC'}</span></div>
                             <span class="title">${item.Buyer || 'MARKET_PARTICIPANT'}</span>
-                            <span class="stat">${item.Volume_tC02 || '0'} TCO2 // STATUS: ${item.Status || 'LOGGED'}</span>
+                            <span class="stat">${item.Volume_tC02 || '0'} TCO2 // ${item.Status || 'LOGGED'}</span>
                         </div>`;
                 });
 
-                // Render Projects
+                // 3. Projects & AI Drafts
                 const pL = document.getElementById('p-list');
                 (data.projects || []).forEach(item => {
-                    const name = item.Project_Name || item.Entity || "ASSET_INTEL";
-                    const info = item.Tech_Pathway || item.Details || "ANALYZING SPECS...";
+                    const name = item.Project_Name || item.Entity || "INTEL_UPDATE";
+                    const tech = item.Tech_Pathway || item.Details || "ANALYZING SPECS...";
                     pL.innerHTML += `
                         <div class="card" style="border-left-color: #ffaa00;">
-                            <div class="meta"><span>DATE: ${formatDate(item.Date)}</span> <span>STATUS: ${item.Status || 'DRAFT'}</span></div>
+                            <div class="meta"><span>DATE: ${cleanDate(item.Date)}</span> <span>STATUS: ${item.Status || 'DRAFT'}</span></div>
                             <span class="title">${name}</span>
-                            <div class="intel">${info}</div>
+                            <div class="intel">${tech}</div>
                         </div>`;
                 });
-            } catch (e) {
-                document.getElementById('loading').innerText = "● CONNECTION FAILED";
-            }
+
+                // 4. Raw News Feed
+                const nL = document.getElementById('n-list');
+                (data.news || []).slice(0, 15).forEach(item => {
+                    // This handles the HTML snippets in your 'Snippet' column
+                    nL.innerHTML += `
+                        <div class="news-item">
+                            <span>${cleanDate(item.Date)} // ${item.Headline || 'Source Update'}</span>
+                            <a href="${item.URL}" target="_blank">VIEW_RAW_DATA</a>
+                        </div>`;
+                });
+
+            } catch (e) { console.error("Terminal Error", e); }
         }
         window.onload = loadTerminal;
     </script>
