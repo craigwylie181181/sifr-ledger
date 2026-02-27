@@ -6,36 +6,44 @@
     <title>Sifr Ledger | Carbon Intelligence Terminal</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
-        body { background-color: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 20px; }
+        body { background-color: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 20px; line-height: 1.2; }
         h1, h2 { color: #00ffcc; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #333; padding-bottom: 10px; }
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .data-card { background-color: #111; border: 1px solid #333; border-left: 4px solid #00ffcc; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        .data-card { background-color: #111; border: 1px solid #333; border-left: 4px solid #00ffcc; padding: 15px; margin-bottom: 15px; border-radius: 2px; }
         .data-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .data-label { color: #666; font-size: 11px; text-transform: uppercase; }
+        .data-label { color: #666; font-size: 10px; text-transform: uppercase; }
         .data-value { color: #fff; font-weight: bold; font-size: 13px; }
-        .details { color: #ccc; font-size: 12px; margin-top: 8px; line-height: 1.4; }
-        #loading { color: #00ffcc; font-family: monospace; margin-bottom: 20px; }
+        .details { color: #bbb; font-size: 12px; margin-top: 8px; border-top: 1px solid #222; padding-top: 5px; }
+        #loading { color: #00ffcc; background: #111; padding: 10px; border: 1px dashed #00ffcc; margin-bottom: 20px; display: inline-block; }
+        @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <h1>Sifr Ledger Terminal</h1>
-    <div id="loading">SCANNING DATABASE...</div>
+    <div id="loading">CONNECTING TO DATABASE...</div>
 
     <div class="grid-container">
         <div>
             <h2>Transactions</h2>
             <div id="transactions-list"></div>
         </div>
+        
         <div>
-            <h2>Projects & Intelligence</h2>
+            <h2>Project Intelligence</h2>
             <div id="projects-list"></div>
         </div>
     </div>
 
     <script>
-        // REPLACE WITH YOUR ACTUAL DEPLOYED URL
-        const apiUrl = "YOUR_GOOGLE_WEB_APP_URL_HERE";
+        const apiUrl = "https://script.google.com/macros/s/AKfycbxR038g15O7CKEPd9Q0u3lPFoO4RFWllVIUIC4lFhUDfZWXht6wyuD1YN73uEKTfbug/exec";
+
+        function cleanDate(d) {
+            if (!d || d === "NO_DATA") return "ACTIVE";
+            const dateObj = new Date(d);
+            if (isNaN(dateObj.getTime())) return d; // Return as-is if it's already "June 2023" etc.
+            return dateObj.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
+        }
 
         async function loadData() {
             try {
@@ -43,37 +51,11 @@
                 const data = await response.json();
                 document.getElementById('loading').style.display = 'none';
 
-                // 1. Transactions
+                // 1. Process Transactions (from Transactions tab)
                 const tList = document.getElementById('transactions-list');
                 (data.transactions || []).forEach(item => {
                     tList.innerHTML += `
                         <div class="data-card">
-                            <div class="data-row"><span class="data-label">DATE</span><span class="data-value">${item.Date || '2026'}</span></div>
-                            <div class="data-row"><span class="data-label">BUYER</span><span class="data-value">${item.Buyer || 'N/A'}</span></div>
-                            <div class="details">${item.Project_Source || 'Market Transaction'} | ${item.Volume_tC02 || '0'} tCO2</div>
-                        </div>`;
-                });
-
-                // 2. Projects (Combines Manual Projects and AI Drafts)
-                const pList = document.getElementById('projects-list');
-                (data.projects || []).forEach(item => {
-                    // This logic finds the name regardless of which sheet it comes from
-                    const name = item.Project_Name || item.Entity || "New Intelligence";
-                    const info = item.Tech_Pathway || item.Details || "Analyzing technical specs...";
-                    const date = item.Date || "ACTIVE";
-
-                    pList.innerHTML += `
-                        <div class="data-card">
-                            <div class="data-row"><span class="data-label">DATE</span><span class="data-value">${date}</span></div>
-                            <div class="data-row"><span class="data-label">ENTITY</span><span class="data-value">${name}</span></div>
-                            <div class="details">${info}</div>
-                        </div>`;
-                });
-            } catch (error) {
-                document.getElementById('loading').innerText = "CONNECTION OFFLINE";
-            }
-        }
-        window.onload = loadData;
-    </script>
-</body>
-</html>
+                            <div class="data-row"><span class="data-label">DATE</span><span class="data-value">${cleanDate(item.Date)}</span></div>
+                            <div class="data-row"><span class="data-label">BUYER</span><span class="data-value">${item.Buyer || 'MARKET'}</span></div>
+                            <div class="details">${item.Volume_tC02 || 'N/A'} tCO2 | ${item.Status || 'Verified'}</div>
