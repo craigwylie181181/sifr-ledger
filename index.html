@@ -5,44 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIFR LEDGER | Intelligence Terminal</title>
     <style>
-        :root { --neon: #00ffcc; --bg: #0a0a0a; --card: #111; --border: #222; }
+        :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; }
         body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', monospace; margin: 0; padding: 20px; }
         
-        /* Header Stats Bar */
-        .terminal-header { display: flex; justify-content: space-between; border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 30px; }
-        .logo { font-weight: bold; font-size: 24px; color: var(--neon); letter-spacing: 4px; }
-        .market-status { color: var(--neon); font-size: 12px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 30px; }
+        .logo { font-weight: bold; font-size: 22px; color: var(--neon); letter-spacing: 5px; }
+        .status { color: var(--neon); font-size: 11px; animation: blink 2s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-        h2 { font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        h2 { font-size: 14px; color: #555; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; }
 
-        /* Terminal Cards */
-        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 15px; position: relative; overflow: hidden; }
+        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 15px; position: relative; border-radius: 2px; }
         .card::before { content: ""; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--neon); }
-        .card:hover { border-color: var(--neon); background: #151515; }
-
-        .data-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 11px; color: #555; }
-        .main-val { color: #fff; font-size: 16px; font-weight: bold; margin-bottom: 5px; display: block; }
-        .sub-val { color: var(--neon); font-size: 12px; }
-        .details { color: #888; font-size: 12px; margin-top: 10px; line-height: 1.4; border-top: 1px solid #222; padding-top: 10px; }
-
-        #status-msg { color: var(--neon); font-size: 12px; margin-bottom: 20px; border: 1px dashed var(--neon); padding: 10px; display: inline-block; }
         
-        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #444; margin-bottom: 10px; }
+        .title { color: #fff; font-size: 15px; font-weight: bold; text-transform: uppercase; display: block; }
+        .stat { color: var(--neon); font-size: 12px; margin-top: 5px; display: block; }
+        .intel { color: #888; font-size: 12px; margin-top: 10px; border-top: 1px solid #222; padding-top: 10px; line-height: 1.4; }
+
+        #loading { color: var(--neon); font-size: 12px; border: 1px dashed var(--neon); padding: 10px; display: inline-block; margin-bottom: 20px; }
+        @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <div class="terminal-header">
+    <div class="header">
         <div class="logo">SIFR LEDGER v1.0</div>
-        <div class="market-status">SYSTEM: ONLINE // REGION: GCC // DATA: REAL-TIME</div>
+        <div class="status">● SIGNAL STRENGTH: OPTIMAL</div>
     </div>
 
-    <div id="status-msg">INITIALIZING SECURE DATA UPLINK...</div>
+    <div id="loading">DECRYPTING SECURE DATABASE...</div>
 
     <div class="grid">
         <div>
-            <h2>[01] MARKET_TRANSACTIONS</h2>
+            <h2>[01] TRANSACTION_LOG</h2>
             <div id="t-list"></div>
         </div>
         <div>
@@ -52,44 +49,42 @@
     </div>
 
     <script>
-        const url = "https://script.google.com/macros/s/AKfycbxR038g15O7CKEPd9Q0u3lPFoO4RFWllVIUIC4lFhUDfZWXht6wyuD1YN73uEKTfbug/exec";
+        const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
 
-        async function fetchTerminalData() {
+        async function loadTerminal() {
             try {
                 const res = await fetch(url, { cache: "no-store" });
                 const data = await res.json();
-                document.getElementById('status-msg').style.display = 'none';
+                document.getElementById('loading').style.display = 'none';
 
-                // Render Transactions
                 const tL = document.getElementById('t-list');
                 (data.transactions || []).forEach(item => {
                     tL.innerHTML += `
                         <div class="card">
-                            <div class="data-header"><span>DATE: ${item.Date || '2026'}</span> <span>TYPE: OFFSET_DEAL</span></div>
-                            <span class="main-val">${item.Buyer || 'MARKET_PARTICIPANT'}</span>
-                            <span class="sub-val">${item.Volume_tC02 || '0'} tCO2 // STATUS: ${item.Status || 'VERIFIED'}</span>
+                            <div class="meta"><span>DATE: ${item.Date || '2026'}</span> <span>TYPE: OFFSET_DEAL</span></div>
+                            <span class="title">${item.Buyer || 'MARKET_PARTICIPANT'}</span>
+                            <span class="stat">${item.Volume_tC02 || '0'} TCO2 // STATUS: ${item.Status || 'LOGGED'}</span>
                         </div>`;
                 });
 
-                // Render Projects (Handles both manual 'Project_Name' and AI 'Entity')
                 const pL = document.getElementById('p-list');
                 (data.projects || []).forEach(item => {
+                    // Smart Mapping: checks all possible header names
                     const name = item.Project_Name || item.Entity || "UNIDENTIFIED_ASSET";
-                    const info = item.Tech_Pathway || item.Details || "ANALYZING SEQUESTRATION SPECS...";
-                    const status = item.Status || "DRAFT_INTEL";
-
+                    const info = item.Tech_Pathway || item.Details || "ANALYZING TECHNICAL SPECS...";
+                    
                     pL.innerHTML += `
                         <div class="card" style="border-left-color: #ffaa00;">
-                            <div class="data-header"><span>DATE: ${item.Date || 'ACTIVE'}</span> <span>STATUS: ${status}</span></div>
-                            <span class="main-val">${name.toUpperCase()}</span>
-                            <div class="details">${info}</div>
+                            <div class="meta"><span>DATE: ${item.Date || 'ACTIVE'}</span> <span>STATUS: ${item.Status || 'DRAFT'}</span></div>
+                            <span class="title">${name}</span>
+                            <div class="intel">${info}</div>
                         </div>`;
                 });
             } catch (e) {
-                document.getElementById('status-msg').innerText = "ERROR: UPLINK FAILED. CHECK APPS SCRIPT PERMISSIONS.";
+                document.getElementById('loading').innerText = "CONNECTION ERROR: CHECK DEPLOYMENT";
             }
         }
-        window.onload = fetchTerminalData;
+        window.onload = loadTerminal;
     </script>
 </body>
 </html>
