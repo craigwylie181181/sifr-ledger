@@ -11,29 +11,26 @@
         :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; }
         body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
-        /* Market Ticker */
         .ticker-wrap { background: #000; border-bottom: 1px solid var(--neon); padding: 10px 0; overflow: hidden; white-space: nowrap; }
         .ticker { display: inline-block; animation: marquee 60s linear infinite; color: var(--neon); font-size: 11px; font-weight: bold; text-transform: uppercase; }
         .p-up { color: #00ff66; margin-left: 4px; }
-        .p-down { color: #ff4400; margin-left: 4px; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         .container { padding: 20px; max-width: 1400px; margin: 0 auto; }
         .header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
         .logo { font-weight: bold; font-size: 28px; color: var(--neon); letter-spacing: 6px; }
 
-        /* Analytics Hub: 3-Column Layout */
+        /* Analytics Hub */
         .analytics-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 20px; margin-bottom: 30px; background: #0a0a0a; padding: 20px; border: 1px solid var(--border); }
         .chart-container { height: 240px; position: relative; }
 
-        /* Layout & Scrolling */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
         .scroll-box { max-height: 500px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
-        .news-scroll { max-height: 300px; overflow-y: auto; padding-right: 10px; border-top: 1px solid #222; padding-top: 10px; }
+        .news-scroll { max-height: 350px; overflow-y: auto; border-top: 1px solid #222; padding-top: 10px; }
         
         h2 { font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
 
-        /* Forensic Badges (Zero Dots) */
+        /* Forensic Sector Badges (Zero Dots/Logos) */
         .sector-badge { display: inline-flex; font-size: 9px; padding: 2px 8px; border-radius: 2px; margin-left: 10px; border: 1px solid transparent; text-transform: uppercase; font-weight: bold; }
         .flag-icon { width: 14px; height: 10px; margin-right: 5px; vertical-align: middle; }
         .badge { font-size: 9px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
@@ -44,7 +41,6 @@
         .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; font-weight: bold; align-items: center; }
         .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; }
         .stat { color: var(--neon); font-size: 12px; font-weight: bold; margin-top: 4px; display: block; }
-        .intel { color: #888; font-size: 11px; margin-top: 8px; border-top: 1px solid #222; padding-top: 8px; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -53,8 +49,8 @@
         <div class="ticker">
             GCC_RVCMC: $22.40 <span class="p-up">▲ 1.4%</span> // 
             TECH_REMOVAL (CORC): $175.00 <span class="p-up">▲ 2.8%</span> // 
-            NATURE_BASED (NBO): $15.50 <span class="p-down">▼ 0.5%</span> // 
-            EU_ETS: €70.86 <span class="p-down">▼ 0.1%</span> // 
+            NATURE_BASED (NBO): $15.50 <span style="color:#ff4400">▼ 0.5%</span> // 
+            EU_ETS: €70.86 <span style="color:#ff4400">▼ 0.1%</span> // 
             SIFR_PREMIUM: $35.40 <span class="p-up">▲ 4.2%</span> //
         </div>
     </div>
@@ -62,10 +58,10 @@
     <div class="container">
         <div class="header">
             <div class="logo">SIFR LEDGER</div>
-            <div style="font-size: 10px; color: var(--neon);">● GEOSPATIAL_INTEL_ACTIVE</div>
+            <div style="font-size: 10px; color: var(--neon);">● GEOSPATIAL_SYNC: ACTIVE</div>
         </div>
 
-        <h2>0. Market Intelligence Hub</h2>
+        <h2>0. Portfolio Intelligence Hub</h2>
         <div class="analytics-grid">
             <div class="chart-container"><canvas id="pathwayChart"></canvas></div>
             <div class="chart-container"><canvas id="gccMap"></canvas></div>
@@ -81,13 +77,11 @@
     </div>
 
     <script>
-        const url = "https://script.google.com/macros/s/AKfycbxR038g15O7CKEPd9Q0u3lPFoO4RFWllVIUIC4lFhUDfZWXht6wyuD1YN73uEKTfbug/exec";
-        const countryISO = { 'UAE': '784', 'KSA': '682', 'Saudi Arabia': '682', 'Oman': '512', 'Qatar': '634', 'Kuwait': '414', 'Bahrain': '048' };
-        const sectorConfig = { 'Aviation': '#00bcff', 'Energy': '#ff4400', 'Shipping': '#9944ff', 'Finance': '#00ffcc', 'Default': '#555' };
+        const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
+        const countryISO = { 'UAE': '784', 'KSA': '682', 'Oman': '512', 'Qatar': '634', 'Kuwait': '414', 'Bahrain': '048' };
+        const sectorColors = { 'Aviation': '#00bcff', 'Energy': '#ff4400', 'Shipping': '#9944ff', 'Finance': '#00ffcc', 'Default': '#555' };
 
         function formatNum(n) { return Number(n.toString().replace(/,/g, '')).toLocaleString(); }
-        function getFlag(name) { return `https://flagcdn.com/w20/${(countryISO[name] === '784' ? 'ae' : (countryISO[name] === '682' ? 'sa' : 'un'))}.png`; }
-        
         function cleanDate(d) {
             if (!d || d === "" || d === "null") return "ACTIVE";
             const dateObj = new Date(d);
@@ -100,14 +94,13 @@
                 const res = await fetch(url);
                 const data = await res.json();
 
-                // --- AGGREGATION ---
-                let pCounts = { '784':0, '682':0, '512':0, '634':0, '414':0, '048':0 };
-                let perm = 0, dec = 0;
-                let sectors = {};
+                // --- DATA LOGIC ---
+                let counts = { '784':0, '682':0, '512':0, '634':0, '414':0, '048':0 };
+                let perm = 0, dec = 0, sectors = {};
 
                 (data.projects || []).forEach(p => {
                     const id = countryISO[p.Country];
-                    if (id) pCounts[id]++;
+                    if (id) counts[id]++;
                     if ((p.Category || '').includes('Industrial') || (p.Tech_Pathway || '').includes('CCUS')) perm++; else dec++;
                 });
 
@@ -116,14 +109,14 @@
                     sectors[s] = (sectors[s] || 0) + 1;
                 });
 
-                // --- CHART 1: PATHWAY (DISAGGREGATE) ---
+                // --- CHART 1: PATHWAY ---
                 new Chart(document.getElementById('pathwayChart'), {
                     type: 'doughnut',
                     data: { labels: ['Removal', 'Avoidance'], datasets: [{ data:[perm, dec], backgroundColor:['#00bcff','#00ff66'], borderWidth:0 }] },
-                    options: { cutout:'80%', plugins: { title:{ display:true, text:'QUALITY SPLIT', color:'#fff' }, legend:{ display:false } } }
+                    options: { cutout:'85%', plugins: { title:{ display:true, text:'QUALITY SPLIT', color:'#fff' }, legend:{ display:false } } }
                 });
 
-                // --- CHART 2: GCC MAP (CONTEXTUALIZE) ---
+                // --- CHART 2: GCC MAP ---
                 fetch('https://unpkg.com/world-atlas/countries-50m.json').then(r => r.json()).then(atlas => {
                     const countries = topojson.feature(atlas, atlas.objects.countries).features;
                     const gccFeatures = countries.filter(f => Object.values(countryISO).includes(f.id));
@@ -133,35 +126,35 @@
                             labels: gccFeatures.map(f => f.properties.name),
                             datasets: [{
                                 outline: gccFeatures,
-                                data: gccFeatures.map(f => ({ feature: f, value: pCounts[f.id] || 0 })),
+                                data: gccFeatures.map(f => ({ feature: f, value: counts[f.id] || 0 })),
                                 backgroundColor: (ctx) => {
                                     if (!ctx.raw) return '#111';
-                                    return `rgba(0, 255, 204, ${Math.min(0.2 + (ctx.raw.value * 0.2), 1)})`;
+                                    return `rgba(0, 255, 204, ${Math.min(0.1 + (ctx.raw.value * 0.3), 1)})`;
                                 }
                             }]
                         },
-                        options: { plugins: { legend: { display: false }, title: { display: true, text: 'ASSET DENSITY (GCC)', color: '#fff' } }, scales: { projection: { projection: 'mercator' } } }
+                        options: { plugins: { legend: { display: false }, title: { display: true, text: 'ASSET INTENSITY (GCC)', color: '#fff' } }, scales: { projection: { projection: 'mercator' } } }
                     });
                 });
 
-                // --- CHART 3: SECTOR (MARKET SEGMENTATION) ---
+                // --- CHART 3: SECTORS ---
                 new Chart(document.getElementById('sectorChart'), {
                     type: 'bar',
-                    data: { labels: Object.keys(sectors), datasets: [{ data: Object.values(sectors), backgroundColor: Object.keys(sectors).map(s => sectorConfig[s] || '#555') }] },
-                    options: { indexAxis: 'y', plugins: { title: { display: true, text: 'TRANSACTIONS BY SECTOR', color: '#fff' }, legend: { display: false } }, scales: { x: { display: false }, y: { ticks: { color: '#888', font: { size: 9 } } } } }
+                    data: { labels: Object.keys(sectors), datasets: [{ data: Object.values(sectors), backgroundColor: '#00ffcc' }] },
+                    options: { indexAxis: 'y', plugins: { title: { display: true, text: 'MARKET SEGMENTS', color: '#fff' }, legend: { display: false } }, scales: { x: { display: false }, y: { ticks: { color: '#888', font: { size: 9 } } } } }
                 });
 
-                // --- LISTS ---
+                // --- RENDERING ---
                 const tL = document.getElementById('t-list');
                 (data.transactions || []).forEach(item => {
-                    const c = sectorConfig[item.Sector] || '#555';
+                    const c = sectorColors[item.Sector] || '#555';
                     tL.innerHTML += `<div class="card"><div class="meta"><span>${cleanDate(item.Date)}</span> <span class="sector-badge" style="border-color:${c}; color:${c}">${item.Sector || 'General'}</span></div><span class="title">${item.Buyer}</span><span class="stat">${formatNum(item.Volume_tC02)} tCO2</span></div>`;
                 });
 
                 const pL = document.getElementById('p-list');
                 (data.projects || []).forEach(item => {
                     const isInd = (item.Category || '').includes('Industrial');
-                    pL.innerHTML += `<div class="card" style="border-left-color: ${isInd ? '#00bcff' : '#00ff66'}"><div class="meta"><span>${cleanDate(item.Date)}</span> <span><img class="flag-icon" src="${getFlag(item.Country)}"> ${item.Country}</span></div><span class="title">${item.Project_Name || item.Entity}</span><span class="badge ${isInd ? 'status-permanent' : 'status-decadal'}">${isInd ? 'Permanent' : 'Decadal'}</span></div>`;
+                    pL.innerHTML += `<div class="card" style="border-left-color: ${isInd ? '#00bcff' : '#00ff66'}"><div class="meta"><span>${cleanDate(item.Date)}</span> <span>${item.Country}</span></div><span class="title">${item.Project_Name || item.Entity}</span><span class="badge ${isInd ? 'status-permanent' : 'status-decadal'}">${isInd ? 'Permanent' : 'Decadal'}</span></div>`;
                 });
 
                 const nL = document.getElementById('n-list');
