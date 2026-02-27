@@ -6,134 +6,73 @@
     <title>Sifr Ledger | Carbon Intelligence Terminal</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
-        body { background-color: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 0; }
-        h1, h2 { color: #00ffcc; text-transform: uppercase; letter-spacing: 2px; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .ticker-wrap { width: 100%; background-color: #111; border-bottom: 1px solid #333; overflow: hidden; padding: 8px 0; color: #00ffcc; font-size: 14px; white-space: nowrap; }
-        .ticker-move { display: inline-block; animation: ticker 30s linear infinite; }
-        @keyframes ticker { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
-        .ticker-item { margin-right: 40px; }
-        .radar-filters { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
-        .filter-btn { background-color: #222; color: #aaa; border: 1px solid #444; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; text-transform: uppercase; }
-        .filter-btn.active { color: #00ffcc; border-color: #00ffcc; background-color: rgba(0, 255, 204, 0.1); }
-        .chart-container { background-color: #111; border: 1px solid #333; border-radius: 4px; padding: 20px; margin-bottom: 30px; height: 300px; }
+        body { background-color: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 20px; }
+        h1, h2 { color: #00ffcc; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #333; padding-bottom: 10px; }
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .data-section { background-color: #111; border: 1px solid #333; padding: 20px; border-radius: 4px; }
-        .data-card { background-color: #151515; border: 1px solid #333; border-left: 4px solid #00ffcc; padding: 16px; margin-bottom: 16px; border-radius: 4px; }
-        .data-row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dotted #333; padding-bottom: 4px; }
-        .data-label { color: #666; text-transform: uppercase; font-size: 11px; font-weight: bold; }
+        .data-card { background-color: #111; border: 1px solid #333; border-left: 4px solid #00ffcc; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        .data-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .data-label { color: #666; font-size: 11px; text-transform: uppercase; }
         .data-value { color: #fff; font-weight: bold; font-size: 13px; }
-        .data-details-text { color: #ccc; font-size: 13px; line-height: 1.5; margin-top: 5px; }
-        .impact-badge { float: right; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-left: 10px; }
-        .impact-high { background: rgba(255, 50, 50, 0.2); color: #ff3333; border: 1px solid #ff3333; }
-        .impact-medium { background: rgba(255, 170, 0, 0.2); color: #ffaa00; border: 1px solid #ffaa00; }
-        .impact-low { background: rgba(100, 100, 100, 0.2); color: #aaa; border: 1px solid #555; }
-        #loading { color: #00ffcc; font-weight: bold; padding: 10px; background: #111; border: 1px solid #333; margin-bottom: 20px; }
+        .details { color: #ccc; font-size: 12px; margin-top: 8px; line-height: 1.4; }
+        #loading { color: #00ffcc; font-family: monospace; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="ticker-wrap">
-        <div class="ticker-move">
-            <span class="ticker-item">▲ EU ETS CARBON: €62.40 (+1.2%)</span>
-            <span class="ticker-item">◆ SIFR LEDGER CARBON INITIATIVE: ACTIVE</span>
-            <span class="ticker-item">▲ GCC DAC CAPACITIES: +3.4%</span>
-            <span class="ticker-item">▲ GLOBAL SOIL SEQUESTRATION: 12.4M TONS</span>
+    <h1>Sifr Ledger Terminal</h1>
+    <div id="loading">SCANNING DATABASE...</div>
+
+    <div class="grid-container">
+        <div>
+            <h2>Transactions</h2>
+            <div id="transactions-list"></div>
         </div>
-    </div>
-
-    <div class="container">
-        <h1>Sifr Ledger Terminal</h1>
-        <div class="radar-filters">
-            <button class="filter-btn active">Live Feed</button>
-            <button class="filter-btn">CCUS & DAC</button>
-            <button class="filter-btn">Soil Sequestration</button>
-        </div>
-
-        <div class="chart-container">
-            <canvas id="ledgerChart"></canvas>
-        </div>
-
-        <div id="loading">SYSTEM STATUS: INITIALIZING...</div>
-
-        <div class="grid-container">
-            <div class="data-section">
-                <h2>Transactions</h2>
-                <div id="transactions"></div>
-            </div>
-            <div class="data-section">
-                <h2>Projects</h2>
-                <div id="projects"></div>
-            </div>
+        <div>
+            <h2>Projects & Intelligence</h2>
+            <div id="projects-list"></div>
         </div>
     </div>
 
     <script>
-        // REPLACE THE URL BELOW WITH YOUR GOOGLE APPS SCRIPT URL
-        const apiUrl = "https://script.google.com/macros/s/AKfycbxR038g15O7CKEPd9Q0u3lPFoO4RFWllVIUIC4lFhUDfZWXht6wyuD1YN73uEKTfbug/exec";
-
-        function fuzzyFind(row, terms) {
-            const keys = Object.keys(row);
-            for (let t of terms) {
-                let key = keys.find(k => k.toLowerCase().trim().includes(t));
-                if (key && row[key]) return row[key];
-            }
-            return 'N/A';
-        }
-
-        function getImpactTag(text) {
-            const t = String(text).toLowerCase();
-            if (t.includes('billion') || t.includes('adnoc') || t.includes('massive')) return '<span class="impact-badge impact-high">HIGH</span>';
-            if (t.includes('million') || t.includes('contract')) return '<span class="impact-badge impact-medium">MED</span>';
-            return '<span class="impact-badge impact-low">LOG</span>';
-        }
-
-        function drawChart() {
-            const ctx = document.getElementById('ledgerChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Credits', 'CCUS', 'Soil', 'Nature'],
-                    datasets: [{ data: [40, 30, 20, 10], backgroundColor: ['#00ffcc', '#ff3333', '#ffaa00', '#4444ff'], borderWidth: 0 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#aaa' } } } }
-            });
-        }
+        // REPLACE WITH YOUR ACTUAL DEPLOYED URL
+        const apiUrl = "YOUR_GOOGLE_WEB_APP_URL_HERE";
 
         async function loadData() {
-            const status = document.getElementById('loading');
             try {
-                status.innerText = "CONNECTING TO SIFR DATABASE...";
-                const resp = await fetch(apiUrl);
-                const data = await resp.json();
-                status.style.display = 'none';
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                document.getElementById('loading').style.display = 'none';
 
-                if (data.transactions) {
-                    const container = document.getElementById('transactions');
-                    data.transactions.forEach(r => {
-                        const d = fuzzyFind(r, ['date', 'time', 'added']);
-                        const e = fuzzyFind(r, ['entity', 'buyer', 'seller', 'company']);
-                        const val = fuzzyFind(r, ['detail', 'volume', 'carbon', 'purchased', 'credits']);
-                        container.innerHTML += `<div class="data-card"><div class="data-row"><span class="data-label">Date</span><span class="data-value">${d}</span></div><div class="data-row"><span class="data-label">Entity</span><span class="data-value">${e}</span></div><div class="data-label">Intel ${getImpactTag(val)}</div><div class="data-details-text">${val}</div></div>`;
-                    });
-                }
+                // 1. Transactions
+                const tList = document.getElementById('transactions-list');
+                (data.transactions || []).forEach(item => {
+                    tList.innerHTML += `
+                        <div class="data-card">
+                            <div class="data-row"><span class="data-label">DATE</span><span class="data-value">${item.Date || '2026'}</span></div>
+                            <div class="data-row"><span class="data-label">BUYER</span><span class="data-value">${item.Buyer || 'N/A'}</span></div>
+                            <div class="details">${item.Project_Source || 'Market Transaction'} | ${item.Volume_tC02 || '0'} tCO2</div>
+                        </div>`;
+                });
 
-                if (data.projects) {
-                    const container = document.getElementById('projects');
-                    data.projects.forEach(r => {
-                        const d = fuzzyFind(r, ['date', 'time', 'added']);
-                        const p = fuzzyFind(r, ['project', 'entity', 'name', 'site']);
-                        const val = fuzzyFind(r, ['detail', 'capacity', 'volume', 'status', 'description']);
-                        container.innerHTML += `<div class="data-card"><div class="data-row"><span class="data-label">Date</span><span class="data-value">${d}</span></div><div class="data-row"><span class="data-label">Project</span><span class="data-value">${p}</span></div><div class="data-label">Specs ${getImpactTag(val)}</div><div class="data-details-text">${val}</div></div>`;
-                    });
-                }
-                drawChart();
-            } catch (e) {
-                status.innerText = "CRITICAL ERROR: " + e.message;
-                status.style.color = "red";
+                // 2. Projects (Combines Manual Projects and AI Drafts)
+                const pList = document.getElementById('projects-list');
+                (data.projects || []).forEach(item => {
+                    // This logic finds the name regardless of which sheet it comes from
+                    const name = item.Project_Name || item.Entity || "New Intelligence";
+                    const info = item.Tech_Pathway || item.Details || "Analyzing technical specs...";
+                    const date = item.Date || "ACTIVE";
+
+                    pList.innerHTML += `
+                        <div class="data-card">
+                            <div class="data-row"><span class="data-label">DATE</span><span class="data-value">${date}</span></div>
+                            <div class="data-row"><span class="data-label">ENTITY</span><span class="data-value">${name}</span></div>
+                            <div class="details">${info}</div>
+                        </div>`;
+                });
+            } catch (error) {
+                document.getElementById('loading').innerText = "CONNECTION OFFLINE";
             }
         }
-
         window.onload = loadData;
     </script>
 </body>
