@@ -9,44 +9,45 @@
         :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; }
         body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
-        /* Ticker */
+        /* 1. Market Ticker */
         .ticker-wrap { background: #000; border-bottom: 1px solid var(--neon); padding: 10px 0; overflow: hidden; white-space: nowrap; }
-        .ticker { display: inline-block; animation: marquee 60s linear infinite; color: var(--neon); font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .ticker { display: inline-block; animation: marquee 50s linear infinite; color: var(--neon); font-size: 11px; font-weight: bold; text-transform: uppercase; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         .container { padding: 20px; max-width: 1400px; margin: 0 auto; }
         .header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
         .logo { font-weight: bold; font-size: 28px; color: var(--neon); letter-spacing: 6px; }
 
-        /* Analytics Grid */
+        /* 2. Analytics Hub (3D Map) */
         .analytics-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 20px; margin-bottom: 30px; background: #0a0a0a; padding: 20px; border: 1px solid var(--border); }
-        .chart-container { height: 280px; position: relative; }
-
-        /* 3D Map (Restored) */
+        .chart-container { height: 300px; position: relative; overflow: hidden; }
+        
+        /* High-Detail 3D GCC Map */
         .map-3d-wrap { position: relative; width: 100%; height: 100%; perspective: 1200px; }
-        .gcc-svg { width: 100%; height: 100%; transform: rotateX(45deg) rotateZ(-5deg); opacity: 0.5; filter: drop-shadow(0 0 10px rgba(0,255,204,0.2)); }
-        .country-path { fill: #111; stroke: #333; stroke-width: 1; }
-        .active-path { stroke: var(--neon); fill: #0a0a0a; }
+        .gcc-svg { width: 100%; height: 100%; transform: rotateX(50deg) rotateZ(-10deg) translateY(-20px); opacity: 0.6; }
+        .country-path { fill: #000; stroke: #333; stroke-width: 0.8; }
+        .active-path { stroke: var(--neon); fill: #080808; box-shadow: 0 0 10px var(--neon); }
 
         /* Data Pillars */
-        .pillar { position: absolute; width: 10px; background: linear-gradient(to top, var(--neon), transparent); bottom: 50%; transform-origin: bottom; transition: 0.5s; box-shadow: 0 0 15px var(--neon); }
-        .pillar-label { position: absolute; color: var(--neon); font-size: 8px; transform: translateY(-18px); width: 50px; text-align: center; font-weight: bold; }
+        .pillar { position: absolute; width: 8px; background: linear-gradient(to top, var(--neon), transparent); bottom: 50%; transform-origin: bottom; box-shadow: 0 0 12px var(--neon); z-index: 10; transition: 1s; }
+        .pillar-label { position: absolute; color: var(--neon); font-size: 8px; transform: translateY(-20px); width: 60px; text-align: center; font-weight: bold; text-shadow: 0 0 5px #000; }
 
-        /* Scrolling Boxes */
+        /* 3. Layout & Lists */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
         .scroll-box { max-height: 500px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
         .news-scroll { max-height: 350px; overflow-y: auto; border-top: 1px solid #222; padding-top: 10px; }
         
         h2 { font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
 
-        /* Forensic Badges (Zero Dots) */
+        /* Forensic Assets */
         .sector-badge { display: inline-flex; font-size: 9px; padding: 2px 8px; border-radius: 2px; margin-left: 10px; border: 1px solid; text-transform: uppercase; font-weight: bold; }
+        .flag-icon { width: 14px; height: 10px; margin-right: 8px; vertical-align: middle; border-radius: 1px; }
         .badge { font-size: 9px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; font-weight: bold; }
-        .status-permanent { background: #0044ff; color: #fff; border: 1px solid #00bcff; }
-        .status-decadal { background: #006622; color: #fff; border: 1px solid #00ff66; }
+        .status-permanent { background: #0044ff; color: #fff; }
+        .status-decadal { background: #006622; color: #fff; }
         
         .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-left: 3px solid #333; }
-        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; font-weight: bold; }
+        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; font-weight: bold; align-items: center; }
         .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; margin: 4px 0; }
         .stat { color: var(--neon); font-size: 12px; font-weight: bold; }
     </style>
@@ -59,24 +60,24 @@
             TECH_REMOVAL (CORC): $175.00 <span style="color:#00ff66;">▲ 2.8%</span> // 
             NATURE_BASED (NBO): $15.50 <span style="color:#ff4400;">▼ 0.5%</span> // 
             EU_ETS: €70.86 <span style="color:#ff4400;">▼ 0.1%</span> // 
-            SIFR_INDEX: $29.45 <span style="color:#00ff66;">▲ 3.8%</span> //
+            SIFR_PREMIUM: $35.40 <span style="color:#00ff66;">▲ 4.2%</span> //
         </div>
     </div>
 
     <div class="container">
         <div class="header">
             <div class="logo">SIFR LEDGER</div>
-            <div style="font-size: 10px; color: var(--neon);">● COMMAND_CENTER: UPLINK_STABLE</div>
+            <div style="font-size: 10px; color: var(--neon);">● GEOSPATIAL_COMMAND: ONLINE</div>
         </div>
 
         <h2>0. Portfolio Intelligence Hub</h2>
         <div class="analytics-grid">
             <div class="chart-container"><canvas id="pathwayChart"></canvas></div>
             
-            <div class="chart-container" id="mapSection">
+            <div class="chart-container">
                 <div class="map-3d-wrap">
-                    <svg class="gcc-svg" viewBox="0 0 200 150">
-                        <path class="country-path active-path" d="M140,60 L160,80 L150,110 L110,100 L100,70 Z" /> <path class="country-path active-path" d="M60,40 L100,50 L110,90 L50,100 L30,60 Z" /> <path class="country-path" d="M100,45 L115,45 L115,55 L100,55 Z" /> </svg>
+                    <svg class="gcc-svg" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                        <path class="country-path active-path" d="M30,30 L80,40 L110,80 L140,90 L160,110 L140,130 L90,120 L40,110 L20,80 Z" /> <path class="country-path active-path" d="M110,80 L130,85 L140,95 L145,115 L125,120 Z" /> <path class="country-path" d="M105,75 L115,75 L118,85 L108,85 Z" /> </svg>
                     <div id="pillars-container"></div>
                 </div>
             </div>
@@ -94,8 +95,18 @@
 
     <script>
         const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
+        
         const sectorColors = { 'Aviation': '#00bcff', 'Energy': '#ff4400', 'Shipping': '#9944ff', 'Finance': '#00ffcc', 'Default': '#555' };
-        const pillarLocs = { 'UAE': { l: '75%', b: '45%' }, 'KSA': { l: '35%', b: '55%' }, 'Oman': { l: '85%', b: '30%' }, 'Qatar': { l: '58%', b: '58%' } };
+        const countryFlags = { 'UAE': 'ae', 'KSA': 'sa', 'Saudi Arabia': 'sa', 'Oman': 'om', 'Qatar': 'qa', 'Kuwait': 'kw' };
+        
+        const pillarLocs = { 
+            'UAE': { l: '70%', b: '42%' }, 
+            'KSA': { l: '35%', b: '55%' }, 
+            'Oman': { l: '78%', b: '25%' }, 
+            'Qatar': { l: '58%', b: '60%' } 
+        };
+
+        function getFlag(name) { return `https://flagcdn.com/w20/${countryFlags[name] || 'un'}.png`; }
 
         async function init() {
             try {
@@ -111,15 +122,13 @@
                     if ((p.Category || '').includes('Industrial') || (p.Tech_Pathway || '').includes('CCUS')) perm++; else dec++;
                 });
 
-                (data.transactions || []).forEach(t => {
-                    sectors[t.Sector] = (sectors[t.Sector] || 0) + 1;
-                });
+                (data.transactions || []).forEach(t => { sectors[t.Sector] = (sectors[t.Sector] || 0) + 1; });
 
-                // --- 1. PILLARS (Rising Data) ---
+                // --- 1. PILLARS ---
                 const pCont = document.getElementById('pillars-container');
                 Object.keys(counts).forEach(c => {
                     if (counts[c] > 0) {
-                        const h = Math.min(counts[c] * 30, 200);
+                        const h = Math.min(counts[c] * 35, 200);
                         pCont.innerHTML += `<div class="pillar" style="left:${pillarLocs[c].l}; bottom:${pillarLocs[c].b}; height:${h}px;"><div class="pillar-label">${c}<br>${counts[c]}</div></div>`;
                     }
                 });
@@ -127,7 +136,7 @@
                 // --- 2. CHARTS ---
                 new Chart(document.getElementById('pathwayChart'), {
                     type: 'doughnut',
-                    data: { labels: ['Removal', 'Avoidance'], datasets: [{ data:[perm, dec], backgroundColor:['#00bcff','#00ff66'], borderWidth:0 }] },
+                    data: { labels: ['Permanent', 'Decadal'], datasets: [{ data:[perm, dec], backgroundColor:['#00bcff','#00ff66'], borderWidth:0 }] },
                     options: { cutout:'85%', plugins: { title:{ display:true, text:'QUALITY SPLIT', color:'#fff' }, legend:{ display:true, position:'bottom', labels:{ color:'#555', font:{size:9} } } } }
                 });
 
@@ -147,7 +156,7 @@
                 const pL = document.getElementById('p-list');
                 (data.projects || []).forEach(item => {
                     const isInd = (item.Category || '').includes('Industrial');
-                    pL.innerHTML += `<div class="card" style="border-left-color: ${isInd ? '#00bcff' : '#00ff66'}"><div class="meta"><span>${item.Country}</span></div><span class="title">${item.Project_Name || item.Entity}</span><span class="badge ${isInd ? 'status-permanent' : 'status-decadal'}">${isInd ? 'Permanent' : 'Decadal'}</span></div>`;
+                    pL.innerHTML += `<div class="card" style="border-left-color: ${isInd ? '#00bcff' : '#00ff66'}"><div class="meta"><span><img class="flag-icon" src="${getFlag(item.Country)}"> ${item.Country}</span></div><span class="title">${item.Project_Name || item.Entity}</span><span class="badge ${isInd ? 'status-permanent' : 'status-decadal'}">${isInd ? 'Permanent' : 'Decadal'}</span></div>`;
                 });
 
                 const nL = document.getElementById('n-list');
