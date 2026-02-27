@@ -3,59 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sifr Ledger | Carbon Intelligence Terminal</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <title>Sifr Ledger | Terminal</title>
     <style>
-        body { background-color: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 20px; line-height: 1.2; }
-        h1, h2 { color: #00ffcc; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .data-card { background-color: #111; border: 1px solid #333; border-left: 4px solid #00ffcc; padding: 15px; margin-bottom: 15px; border-radius: 2px; }
-        .data-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .data-label { color: #666; font-size: 10px; text-transform: uppercase; }
-        .data-value { color: #fff; font-weight: bold; font-size: 13px; }
-        .details { color: #bbb; font-size: 12px; margin-top: 8px; border-top: 1px solid #222; padding-top: 5px; }
-        #loading { color: #00ffcc; background: #111; padding: 10px; border: 1px dashed #00ffcc; margin-bottom: 20px; display: inline-block; }
-        @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
+        body { background-color: #0a0a0a; color: #e0e0e0; font-family: 'Courier New', Courier, monospace; padding: 20px; }
+        h1, h2 { color: #00ffcc; text-transform: uppercase; letter-spacing: 2px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { background: #111; border: 1px solid #333; padding: 15px; margin-bottom: 10px; border-left: 4px solid #00ffcc; }
+        .label { color: #666; font-size: 10px; }
+        .val { color: #fff; font-weight: bold; }
+        #status { color: #00ffcc; margin-bottom: 20px; border: 1px dashed #00ffcc; padding: 10px; display: inline-block; }
     </style>
 </head>
 <body>
 
     <h1>Sifr Ledger Terminal</h1>
-    <div id="loading">CONNECTING TO DATABASE...</div>
+    <div id="status">INITIATING DATA FETCH...</div>
 
-    <div class="grid-container">
-        <div>
-            <h2>Transactions</h2>
-            <div id="transactions-list"></div>
-        </div>
-        
-        <div>
-            <h2>Project Intelligence</h2>
-            <div id="projects-list"></div>
-        </div>
+    <div class="grid">
+        <div><h2>Transactions</h2><div id="t-list"></div></div>
+        <div><h2>Projects</h2><div id="p-list"></div></div>
     </div>
 
     <script>
-        const apiUrl = "https://script.google.com/macros/s/AKfycbxR038g15O7CKEPd9Q0u3lPFoO4RFWllVIUIC4lFhUDfZWXht6wyuD1YN73uEKTfbug/exec";
+        const url = "https://script.google.com/macros/s/AKfycbxR038g15O7CKEPd9Q0u3lPFoO4RFWllVIUIC4lFhUDfZWXht6wyuD1YN73uEKTfbug/exec";
 
-        function cleanDate(d) {
-            if (!d || d === "NO_DATA") return "ACTIVE";
-            const dateObj = new Date(d);
-            if (isNaN(dateObj.getTime())) return d; // Return as-is if it's already "June 2023" etc.
-            return dateObj.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
-        }
-
-        async function loadData() {
+        async function load() {
             try {
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-                document.getElementById('loading').style.display = 'none';
+                // The 'cache: no-store' forces the browser to get fresh data
+                const res = await fetch(url, { cache: "no-store" });
+                const data = await res.json();
+                document.getElementById('status').style.display = 'none';
 
-                // 1. Process Transactions (from Transactions tab)
-                const tList = document.getElementById('transactions-list');
-                (data.transactions || []).forEach(item => {
-                    tList.innerHTML += `
-                        <div class="data-card">
-                            <div class="data-row"><span class="data-label">DATE</span><span class="data-value">${cleanDate(item.Date)}</span></div>
-                            <div class="data-row"><span class="data-label">BUYER</span><span class="data-value">${item.Buyer || 'MARKET'}</span></div>
-                            <div class="details">${item.Volume_tC02 || 'N/A'} tCO2 | ${item.Status || 'Verified'}</div>
+                const tL = document.getElementById('t-list');
+                (data.transactions || []).forEach(i => {
+                    tL.innerHTML += `<div class="card"><div class="label">BUYER</div><div class="val">${i.Buyer || 'Market'}</div><div>${i.Volume_tC02 || '0'} tCO2</div></div>`;
+                });
+
+                const pL = document.getElementById('p-list');
+                (data.projects || []).forEach(i => {
+                    const name = i.Project_Name || i.Entity || "Intelligence Update";
+                    pL.innerHTML += `<div class="card"><div class="label">ENTITY</div><div class="val">${name}</div><div>${i.Tech_Pathway || i.Details || 'Processing...'}</div></div>`;
+                });
+            } catch (e) {
+                document.getElementById('status').innerText = "ERROR: DATABASE NOT RESPONDING";
+            }
+        }
+        window.onload = load;
+    </script>
+</body>
+</html>
