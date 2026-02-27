@@ -6,82 +6,100 @@
     <title>SIFR LEDGER | Intelligence Terminal</title>
     <style>
         :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; }
-        body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', monospace; margin: 0; padding: 20px; }
+        body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
+        /* Top Ticker Bar */
+        .ticker-wrap { background: #000; border-bottom: 1px solid var(--neon); padding: 10px 0; overflow: hidden; white-space: nowrap; }
+        .ticker { display: inline-block; animation: marquee 30s linear infinite; color: var(--neon); font-size: 12px; font-weight: bold; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        .container { padding: 25px; }
         .header { display: flex; justify-content: space-between; border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 30px; }
         .logo { font-weight: bold; font-size: 22px; color: var(--neon); letter-spacing: 5px; }
-        .status { color: var(--neon); font-size: 11px; animation: blink 2s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        h2 { font-size: 14px; color: #555; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; }
+        h2 { font-size: 13px; color: #555; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 20px; }
 
+        /* Forensic Cards */
         .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 15px; position: relative; border-radius: 2px; }
         .card::before { content: ""; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--neon); }
-        
         .meta { display: flex; justify-content: space-between; font-size: 10px; color: #444; margin-bottom: 10px; }
         .title { color: #fff; font-size: 15px; font-weight: bold; text-transform: uppercase; display: block; }
         .stat { color: var(--neon); font-size: 12px; margin-top: 5px; display: block; }
         .intel { color: #888; font-size: 12px; margin-top: 10px; border-top: 1px solid #222; padding-top: 10px; line-height: 1.4; }
 
-        #loading { color: var(--neon); font-size: 12px; border: 1px dashed var(--neon); padding: 10px; display: inline-block; margin-bottom: 20px; }
-        @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+        #loading { color: var(--neon); font-size: 12px; padding: 10px; display: inline-block; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo">SIFR LEDGER v1.0</div>
-        <div class="status">● SIGNAL STRENGTH: OPTIMAL</div>
+    <div class="ticker-wrap">
+        <div class="ticker" id="ticker-content">LOADING MARKET DATA... // GCC CARBON INDEX: 24.50 (+1.2%) // ADNOC CCUS EXPANSION IN PROGRESS // SAUDI RVCMC AUCTION COMPLETE //</div>
     </div>
 
-    <div id="loading">DECRYPTING SECURE DATABASE...</div>
-
-    <div class="grid">
-        <div>
-            <h2>[01] TRANSACTION_LOG</h2>
-            <div id="t-list"></div>
+    <div class="container">
+        <div class="header">
+            <div class="logo">SIFR LEDGER v1.0</div>
+            <div id="loading">● UPLINK ACTIVE</div>
         </div>
-        <div>
-            <h2>[02] ASSET_INTELLIGENCE</h2>
-            <div id="p-list"></div>
+
+        <div class="grid">
+            <div>
+                <h2>[01] TRANSACTION_LOG</h2>
+                <div id="t-list"></div>
+            </div>
+            <div>
+                <h2>[02] ASSET_INTELLIGENCE</h2>
+                <div id="p-list"></div>
+            </div>
         </div>
     </div>
 
     <script>
         const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
 
+        function formatDate(raw) {
+            if (!raw || raw === "null") return "ACTIVE";
+            const d = new Date(raw);
+            if (isNaN(d.getTime())) return raw; // Returns "June 2023" as-is
+            return d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
+        }
+
         async function loadTerminal() {
             try {
                 const res = await fetch(url, { cache: "no-store" });
                 const data = await res.json();
-                document.getElementById('loading').style.display = 'none';
+                document.getElementById('loading').innerText = "● SIGNAL SECURE";
 
+                // Update Ticker with Buyer Names
+                const tickerText = (data.transactions || []).map(i => `${i.Buyer} [${i.Volume_tC02} tCO2]`).join(" // ");
+                document.getElementById('ticker-content').innerText = tickerText + " // " + tickerText;
+
+                // Render Transactions
                 const tL = document.getElementById('t-list');
                 (data.transactions || []).forEach(item => {
                     tL.innerHTML += `
                         <div class="card">
-                            <div class="meta"><span>DATE: ${item.Date || '2026'}</span> <span>TYPE: OFFSET_DEAL</span></div>
+                            <div class="meta"><span>DATE: ${formatDate(item.Date)}</span> <span>REF: ${item.Sector || 'GCC'}</span></div>
                             <span class="title">${item.Buyer || 'MARKET_PARTICIPANT'}</span>
                             <span class="stat">${item.Volume_tC02 || '0'} TCO2 // STATUS: ${item.Status || 'LOGGED'}</span>
                         </div>`;
                 });
 
+                // Render Projects
                 const pL = document.getElementById('p-list');
                 (data.projects || []).forEach(item => {
-                    // Smart Mapping: checks all possible header names
-                    const name = item.Project_Name || item.Entity || "UNIDENTIFIED_ASSET";
-                    const info = item.Tech_Pathway || item.Details || "ANALYZING TECHNICAL SPECS...";
-                    
+                    const name = item.Project_Name || item.Entity || "ASSET_INTEL";
+                    const info = item.Tech_Pathway || item.Details || "ANALYZING SPECS...";
                     pL.innerHTML += `
                         <div class="card" style="border-left-color: #ffaa00;">
-                            <div class="meta"><span>DATE: ${item.Date || 'ACTIVE'}</span> <span>STATUS: ${item.Status || 'DRAFT'}</span></div>
+                            <div class="meta"><span>DATE: ${formatDate(item.Date)}</span> <span>STATUS: ${item.Status || 'DRAFT'}</span></div>
                             <span class="title">${name}</span>
                             <div class="intel">${info}</div>
                         </div>`;
                 });
             } catch (e) {
-                document.getElementById('loading').innerText = "CONNECTION ERROR: CHECK DEPLOYMENT";
+                document.getElementById('loading').innerText = "● CONNECTION FAILED";
             }
         }
         window.onload = loadTerminal;
