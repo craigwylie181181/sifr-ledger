@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIFR LEDGER | Forensic Terminal</title>
+    <title>SIFR LEDGER | Terminal v4.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/chartjs-chart-geo@4.1.1/build/index.umd.min.js"></script>
     <style>
         :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; }
         body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
@@ -20,37 +19,32 @@
         .header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
         .logo { font-weight: bold; font-size: 28px; color: var(--neon); letter-spacing: 6px; }
 
-        /* 2. Analytics Hub */
-        .analytics-grid { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 20px; margin-bottom: 30px; background: #0a0a0a; padding: 20px; border: 1px solid var(--border); }
-        .chart-container { height: 260px; position: relative; }
-        
-        /* 3. Grid & Scrolling */
+        /* 2. Analytics Section */
+        .analytics-box { background: #0a0a0a; border: 1px solid var(--border); padding: 20px; margin-bottom: 30px; display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        canvas { max-width: 100%; height: 200px !important; }
+
+        /* 3. Layout & Scrolling */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
         .scroll-box { max-height: 450px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
-        h2 { font-size: 13px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
+        h2 { font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
 
         /* 4. Forensic Cards */
-        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-left: 3px solid #333; position: relative; }
-        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; font-weight: bold; }
-        .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; margin: 5px 0; }
-        .stat { color: var(--neon); font-size: 12px; font-weight: bold; }
+        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; position: relative; border-radius: 2px; border-left: 3px solid #333; }
+        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; margin-bottom: 8px; font-weight: bold; }
+        .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .stat { color: var(--neon); font-size: 12px; font-weight: bold; margin-top: 4px; display: block; }
+        .sector-badge { font-size: 9px; padding: 2px 8px; border-radius: 2px; border: 1px solid #444; color: #aaa; text-transform: uppercase; }
         
         .badge { font-size: 9px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
         .status-permanent { background: #0044ff; color: #fff; border: 1px solid #00bcff; }
         .status-decadal { background: #006622; color: #fff; border: 1px solid #00ff66; }
-        .sector-badge { font-size: 9px; padding: 1px 6px; border: 1px solid #444; color: #888; text-transform: uppercase; font-weight: bold; margin-left: 10px; }
-        .flag-icon { width: 14px; height: 10px; margin-right: 5px; vertical-align: middle; border-radius: 1px; }
-
-        /* News Scroll */
-        .news-scroll { max-height: 350px; overflow-y: auto; border-top: 1px solid #222; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div class="ticker-wrap">
         <div class="ticker" id="ticker-content">
-            CORSIA_PHASE_1: $18.90 <span class="price-up">▲ 2.1%</span> // 
-            NATURE_BASED (NBO): $4.12 <span class="price-up">▲ 0.5%</span> // 
+            CORSIA_PHASE_1: $18.85 <span class="price-up">▲ 2.1%</span> // 
             TECH_REMOVAL (CORC): $148.00 <span class="price-up">▲ 1.4%</span> // 
             GCC_EQUIVALENT: $22.60 <span class="price-up">▲ 0.9%</span> // 
             SIFR_INDEX: $29.45 <span class="price-up">▲ 3.8%</span> //
@@ -60,14 +54,17 @@
     <div class="container">
         <div class="header">
             <div class="logo">SIFR LEDGER</div>
-            <div style="font-size: 10px; color: var(--neon);">● LIVE_HEATMAP: CONNECTED</div>
+            <div style="font-size: 10px; color: var(--neon);">● ANALYTICS_ENGINE: ONLINE</div>
         </div>
 
         <h2>0. Portfolio Intelligence</h2>
-        <div class="analytics-grid">
-            <div class="chart-container"><canvas id="pathwayChart"></canvas></div>
-            <div class="chart-container"><canvas id="volumeChart"></canvas></div>
-            <div class="chart-container"><canvas id="gccMap"></canvas></div>
+        <div class="analytics-box">
+            <div>
+                <canvas id="pathwayChart"></canvas>
+            </div>
+            <div>
+                <canvas id="efficiencyChart"></canvas>
+            </div>
         </div>
 
         <div class="grid">
@@ -83,15 +80,13 @@
 
         <div style="border-top: 1px solid #333; padding-top: 20px;">
             <h2>3. Latest News</h2>
-            <div class="news-scroll" id="n-list"></div>
+            <div class="scroll-box" id="n-list" style="max-height: 300px;"></div>
         </div>
     </div>
 
     <script>
         const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
-        const countryISO = { 'UAE': '784', 'KSA': '682', 'Saudi Arabia': '682', 'Oman': '512', 'Qatar': '634', 'Kuwait': '414', 'Bahrain': '048' };
 
-        function formatNum(n) { return Number(n.toString().replace(/,/g, '')).toLocaleString(); }
         function cleanDate(d) {
             if (!d || d === "" || d === "null") return "ACTIVE";
             const dateObj = new Date(d);
@@ -100,7 +95,91 @@
         }
 
         async function init() {
-            const res = await fetch(url);
-            const data = await res.json();
-            
-            // --- 1. DATA LOGIC ---
+            try {
+                const res = await fetch(url, { cache: "no-store" });
+                const data = await res.json();
+
+                // --- DATA PROCESSING FOR CHARTS ---
+                let permanentCount = 0;
+                let decadalCount = 0;
+                (data.projects || []).forEach(p => {
+                    if ((p.Category || '').includes('Industrial') || (p.Tech_Pathway || '').includes('CCUS')) permanentCount++;
+                    else decadalCount++;
+                });
+
+                // --- PATHWAY CHART (DISAGGREGATE) ---
+                new Chart(document.getElementById('pathwayChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Permanent', 'Decadal'],
+                        datasets: [{
+                            data: [permanentCount, decadalCount],
+                            backgroundColor: ['#00bcff', '#00ff66'],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: { 
+                        cutout: '70%',
+                        plugins: { 
+                            legend: { position: 'bottom', labels: { color: '#888', font: { family: 'Courier New', size: 10 } } },
+                            title: { display: true, text: 'PATHWAY RATIO', color: '#fff', font: { size: 12 } }
+                        } 
+                    }
+                });
+
+                // --- EFFICIENCY CHART (CONTEXTUALIZE) ---
+                new Chart(document.getElementById('efficiencyChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                        datasets: [{
+                            label: 'Volume Growth (tCO2)',
+                            data: [12000, 19000, 31000, 45000],
+                            backgroundColor: '#00ffcc'
+                        }]
+                    },
+                    options: {
+                        scales: { 
+                            y: { grid: { color: '#222' }, ticks: { color: '#666' } },
+                            x: { grid: { display: false }, ticks: { color: '#666' } }
+                        },
+                        plugins: { legend: { display: false }, title: { display: true, text: 'SEQUENTIAL VOLUME (FORECAST)', color: '#fff' } }
+                    }
+                });
+
+                // --- RENDER LISTS ---
+                const tL = document.getElementById('t-list');
+                (data.transactions || []).forEach(item => {
+                    tL.innerHTML += `<div class="card">
+                        <div class="meta"><span>${cleanDate(item.Date)}</span> <span class="sector-badge">${item.Sector || 'General'}</span></div>
+                        <span class="title">${item.Buyer || 'Participant'}</span>
+                        <span class="stat">${Number(item.Volume_tC02).toLocaleString()} tCO2</span>
+                    </div>`;
+                });
+
+                const pL = document.getElementById('p-list');
+                (data.projects || []).forEach(item => {
+                    const isInd = (item.Category || '').includes('Industrial') || (item.Tech_Pathway || '').includes('CCUS');
+                    pL.innerHTML += `<div class="card" style="border-left-color: ${isInd ? '#00bcff' : '#00ff66'}">
+                        <div class="meta"><span>${cleanDate(item.Date)}</span> <span>${item.Country || 'GCC'}</span></div>
+                        <span class="title">${item.Project_Name || item.Entity}</span>
+                        <span class="badge ${isInd ? 'status-permanent' : 'status-decadal'}">${isInd ? 'Permanent' : 'Decadal'}</span>
+                        <div class="intel">${item.Tech_Pathway || item.Details || 'Analyzing...'}</div>
+                    </div>`;
+                });
+
+                const nL = document.getElementById('n-list');
+                (data.news || []).sort((a,b) => new Date(b.Date)-new Date(a.Date)).forEach(item => {
+                    nL.innerHTML += `<div style="font-size:11px; color:#aaa; padding:8px; border-bottom:1px solid #222; display:flex; justify-content:space-between;">
+                        <span><strong>${cleanDate(item.Date)}</strong> // ${item.Headline}</span>
+                        <a href="${item.URL}" target="_blank" style="color:var(--neon); text-decoration:none;">VIEW</a>
+                    </div>`;
+                });
+
+            } catch (e) { console.error(e); }
+        }
+        window.onload = init;
+    </script>
+</body>
+</html>
