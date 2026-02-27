@@ -3,59 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIFR LEDGER</title>
+    <title>SIFR LEDGER | Terminal v4.0</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; }
         body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
-        /* Price Ticker */
+        /* 1. Market Ticker */
         .ticker-wrap { background: #000; border-bottom: 1px solid var(--neon); padding: 10px 0; overflow: hidden; white-space: nowrap; }
         .ticker { display: inline-block; animation: marquee 50s linear infinite; color: var(--neon); font-size: 11px; font-weight: bold; text-transform: uppercase; }
         .price-up { color: #00ff66; margin-left: 4px; }
-        .price-down { color: #ff4400; margin-left: 4px; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         .container { padding: 20px; max-width: 1400px; margin: 0 auto; }
         .header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
         .logo { font-weight: bold; font-size: 28px; color: var(--neon); letter-spacing: 6px; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
-        .scroll-box { max-height: 550px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
-        h2 { font-size: 13px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
+        /* 2. Analytics Section */
+        .analytics-box { background: #0a0a0a; border: 1px solid var(--border); padding: 20px; margin-bottom: 30px; display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        canvas { max-width: 100%; height: 200px !important; }
 
-        /* Clean Sector Badges (No Dots) */
-        .sector-badge { display: inline-flex; align-items: center; font-size: 9px; padding: 2px 8px; border-radius: 2px; margin-left: 10px; border: 1px solid transparent; text-transform: uppercase; font-weight: bold; line-height: 1; }
+        /* 3. Layout & Scrolling */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
+        .scroll-box { max-height: 450px; overflow-y: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
+        h2 { font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
+
+        /* 4. Forensic Cards */
+        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; position: relative; border-radius: 2px; border-left: 3px solid #333; }
+        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; margin-bottom: 8px; font-weight: bold; }
+        .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .stat { color: var(--neon); font-size: 12px; font-weight: bold; margin-top: 4px; display: block; }
+        .sector-badge { font-size: 9px; padding: 2px 8px; border-radius: 2px; border: 1px solid #444; color: #aaa; text-transform: uppercase; }
         
-        .flag-icon { width: 14px; height: 10px; margin-right: 5px; vertical-align: middle; border-radius: 1px; }
         .badge { font-size: 9px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
         .status-permanent { background: #0044ff; color: #fff; border: 1px solid #00bcff; }
         .status-decadal { background: #006622; color: #fff; border: 1px solid #00ff66; }
-        
-        /* Cards */
-        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; position: relative; border-radius: 2px; border-left: 3px solid #333; }
-        .meta { display: flex; justify-content: space-between; font-size: 10px; color: #555; margin-bottom: 8px; font-weight: bold; align-items: center; }
-        .title { color: #fff; font-size: 14px; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 4px; }
-        .stat { color: var(--neon); font-size: 12px; font-weight: bold; margin-top: 4px; display: block; }
-        .intel { color: #888; font-size: 11px; margin-top: 8px; border-top: 1px solid #222; padding-top: 8px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
     <div class="ticker-wrap">
         <div class="ticker" id="ticker-content">
-            CORSIA_PHASE_1: $18.65 <span class="price-up">▲ 2.4%</span> // 
-            NATURE_BASED (NBO): $4.10 <span class="price-down">▼ 1.2%</span> // 
-            TECH_REMOVAL (CORC): $145.50 <span class="price-up">▲ 0.8%</span> // 
-            GCC_EQUIVALENT: $22.40 <span class="price-up">▲ 1.6%</span> // 
-            SIFR_INDEX: $29.10 <span class="price-up">▲ 3.5%</span> //
-            REDD+: $6.20 <span class="price-down">▼ 0.3%</span> //
+            CORSIA_PHASE_1: $18.85 <span class="price-up">▲ 2.1%</span> // 
+            TECH_REMOVAL (CORC): $148.00 <span class="price-up">▲ 1.4%</span> // 
+            GCC_EQUIVALENT: $22.60 <span class="price-up">▲ 0.9%</span> // 
+            SIFR_INDEX: $29.45 <span class="price-up">▲ 3.8%</span> //
         </div>
     </div>
 
     <div class="container">
         <div class="header">
             <div class="logo">SIFR LEDGER</div>
-            <div style="font-size: 10px; color: var(--neon);">● LIVE_INTEL_UPLINK</div>
+            <div style="font-size: 10px; color: var(--neon);">● ANALYTICS_ENGINE: ONLINE</div>
+        </div>
+
+        <h2>0. Portfolio Intelligence</h2>
+        <div class="analytics-box">
+            <div>
+                <canvas id="pathwayChart"></canvas>
+            </div>
+            <div>
+                <canvas id="efficiencyChart"></canvas>
+            </div>
         </div>
 
         <div class="grid">
@@ -71,39 +80,16 @@
 
         <div style="border-top: 1px solid #333; padding-top: 20px;">
             <h2>3. Latest News</h2>
-            <div id="n-list"></div>
+            <div class="scroll-box" id="n-list" style="max-height: 300px;"></div>
         </div>
     </div>
 
     <script>
         const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
 
-        const countryMap = {
-            'UAE': 'ae', 'KSA': 'sa', 'Saudi Arabia': 'sa', 'Oman': 'om', 'Qatar': 'qa', 'Kuwait': 'kw', 'Bahrain': 'bh', 'USA': 'us', 'UK': 'gb'
-        };
-
-        const sectorConfig = {
-            'Aviation': '#00bcff',
-            'Energy': '#ff4400',
-            'Shipping': '#9944ff',
-            'Finance': '#00ffcc',
-            'Default': '#555'
-        };
-
-        function getFlag(name) {
-            const code = countryMap[name] || 'un';
-            return `https://flagcdn.com/w20/${code}.png`;
-        }
-
-        function formatNum(n) {
-            if (!n) return "0";
-            return Number(n.toString().replace(/,/g, '')).toLocaleString();
-        }
-
         function cleanDate(d) {
             if (!d || d === "" || d === "null") return "ACTIVE";
             const dateObj = new Date(d);
-            // If it's the 1970 glitch or just a manual text year, return exactly what's in the sheet
             if (isNaN(dateObj.getTime()) || dateObj.getFullYear() < 2000) return d.toString().toUpperCase();
             return dateObj.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
         }
@@ -113,54 +99,84 @@
                 const res = await fetch(url, { cache: "no-store" });
                 const data = await res.json();
 
-                // Sort News by Date (Descending)
-                const sortedNews = (data.news || []).sort((a, b) => new Date(b.Date) - new Date(a.Date));
+                // --- DATA PROCESSING FOR CHARTS ---
+                let permanentCount = 0;
+                let decadalCount = 0;
+                (data.projects || []).forEach(p => {
+                    if ((p.Category || '').includes('Industrial') || (p.Tech_Pathway || '').includes('CCUS')) permanentCount++;
+                    else decadalCount++;
+                });
 
-                // 2. Transactions
+                // --- PATHWAY CHART (DISAGGREGATE) ---
+                new Chart(document.getElementById('pathwayChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Permanent', 'Decadal'],
+                        datasets: [{
+                            data: [permanentCount, decadalCount],
+                            backgroundColor: ['#00bcff', '#00ff66'],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: { 
+                        cutout: '70%',
+                        plugins: { 
+                            legend: { position: 'bottom', labels: { color: '#888', font: { family: 'Courier New', size: 10 } } },
+                            title: { display: true, text: 'PATHWAY RATIO', color: '#fff', font: { size: 12 } }
+                        } 
+                    }
+                });
+
+                // --- EFFICIENCY CHART (CONTEXTUALIZE) ---
+                new Chart(document.getElementById('efficiencyChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                        datasets: [{
+                            label: 'Volume Growth (tCO2)',
+                            data: [12000, 19000, 31000, 45000],
+                            backgroundColor: '#00ffcc'
+                        }]
+                    },
+                    options: {
+                        scales: { 
+                            y: { grid: { color: '#222' }, ticks: { color: '#666' } },
+                            x: { grid: { display: false }, ticks: { color: '#666' } }
+                        },
+                        plugins: { legend: { display: false }, title: { display: true, text: 'SEQUENTIAL VOLUME (FORECAST)', color: '#fff' } }
+                    }
+                });
+
+                // --- RENDER LISTS ---
                 const tL = document.getElementById('t-list');
                 (data.transactions || []).forEach(item => {
-                    const secColor = sectorConfig[item.Sector] || sectorConfig['Default'];
-                    tL.innerHTML += `
-                        <div class="card">
-                            <div class="meta">
-                                <span>DATE: ${cleanDate(item.Date)}</span>
-                                <span>
-                                    <img class="flag-icon" src="${getFlag(item.Country)}"> ${item.Country || ''}
-                                    <span class="sector-badge" style="border-color: ${secColor}; color: ${secColor};">
-                                        ${item.Sector || 'GENERAL'}
-                                    </span>
-                                </span>
-                            </div>
-                            <span class="title">${item.Buyer || 'MARKET_PARTICIPANT'}</span>
-                            <span class="stat">${formatNum(item.Volume_tC02)} tCO2</span>
-                        </div>`;
+                    tL.innerHTML += `<div class="card">
+                        <div class="meta"><span>${cleanDate(item.Date)}</span> <span class="sector-badge">${item.Sector || 'General'}</span></div>
+                        <span class="title">${item.Buyer || 'Participant'}</span>
+                        <span class="stat">${Number(item.Volume_tC02).toLocaleString()} tCO2</span>
+                    </div>`;
                 });
 
-                // 3. Projects
                 const pL = document.getElementById('p-list');
                 (data.projects || []).forEach(item => {
-                    const isIndustrial = (item.Category || '').includes('Industrial') || (item.Tech_Pathway || '').includes('CCUS');
-                    pL.innerHTML += `
-                        <div class="card" style="border-left-color: ${isIndustrial ? '#00bcff' : '#00ff66'};">
-                            <div class="meta">
-                                <span>DATE: ${cleanDate(item.Date)}</span>
-                                <span><img class="flag-icon" src="${getFlag(item.Country)}"> ${item.Country || ''}</span>
-                            </div>
-                            <span class="title">${item.Project_Name || item.Entity || 'ASSET_INTEL'}</span>
-                            <span class="badge ${isIndustrial ? 'status-permanent' : 'status-decadal'}">${isIndustrial ? 'PERMANENT' : 'DECADAL'}</span>
-                            <div class="intel">${item.Tech_Pathway || item.Details || 'ANALYZING...'}</div>
-                        </div>`;
+                    const isInd = (item.Category || '').includes('Industrial') || (item.Tech_Pathway || '').includes('CCUS');
+                    pL.innerHTML += `<div class="card" style="border-left-color: ${isInd ? '#00bcff' : '#00ff66'}">
+                        <div class="meta"><span>${cleanDate(item.Date)}</span> <span>${item.Country || 'GCC'}</span></div>
+                        <span class="title">${item.Project_Name || item.Entity}</span>
+                        <span class="badge ${isInd ? 'status-permanent' : 'status-decadal'}">${isInd ? 'Permanent' : 'Decadal'}</span>
+                        <div class="intel">${item.Tech_Pathway || item.Details || 'Analyzing...'}</div>
+                    </div>`;
                 });
 
-                // 4. Latest News
                 const nL = document.getElementById('n-list');
-                sortedNews.slice(0, 15).forEach(item => {
-                    nL.innerHTML += `
-                        <div style="font-size:12px; color:#aaa; padding:10px; border-bottom:1px solid #222; display:flex; justify-content:space-between;">
-                            <span><strong>${cleanDate(item.Date)}</strong> // ${item.Headline || 'Signal'}</span>
-                            <a href="${item.URL}" target="_blank" style="color:var(--neon); font-size:10px; text-decoration:none; border:1px solid var(--neon); padding:2px 5px;">VIEW</a>
-                        </div>`;
+                (data.news || []).sort((a,b) => new Date(b.Date)-new Date(a.Date)).forEach(item => {
+                    nL.innerHTML += `<div style="font-size:11px; color:#aaa; padding:8px; border-bottom:1px solid #222; display:flex; justify-content:space-between;">
+                        <span><strong>${cleanDate(item.Date)}</strong> // ${item.Headline}</span>
+                        <a href="${item.URL}" target="_blank" style="color:var(--neon); text-decoration:none;">VIEW</a>
+                    </div>`;
                 });
+
             } catch (e) { console.error(e); }
         }
         window.onload = init;
