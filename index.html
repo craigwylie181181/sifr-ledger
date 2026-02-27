@@ -21,8 +21,7 @@
         h2 { font-size: 13px; color: #777; text-transform: uppercase; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; margin-bottom: 15px; }
 
         /* Badges & Icons */
-        .sector-badge { display: inline-flex; align-items: center; font-size: 9px; padding: 1px 6px; border-radius: 2px; margin-left: 10px; border: 1px solid transparent; text-transform: uppercase; }
-        .dot { height: 6px; width: 6px; border-radius: 50%; margin-right: 5px; display: inline-block; }
+        .sector-badge { display: inline-flex; align-items: center; font-size: 9px; padding: 2px 8px; border-radius: 2px; margin-left: 10px; border: 1px solid transparent; text-transform: uppercase; font-weight: bold; }
         
         .flag-icon { width: 14px; height: 10px; margin-right: 5px; vertical-align: middle; border-radius: 1px; }
         .badge { font-size: 9px; padding: 2px 6px; border-radius: 2px; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
@@ -75,11 +74,11 @@
         };
 
         const sectorConfig = {
-            'Aviation': { color: '#00bcff', dot: '#00bcff' },
-            'Energy': { color: '#ff4400', dot: '#ff4400' },
-            'Shipping': { color: '#9944ff', dot: '#9944ff' },
-            'Finance': { color: '#00ffcc', dot: '#00ffcc' },
-            'Default': { color: '#555', dot: '#555' }
+            'Aviation': '#00bcff',
+            'Energy': '#ff4400',
+            'Shipping': '#9944ff',
+            'Finance': '#00ffcc',
+            'Default': '#555'
         };
 
         function getFlag(name) {
@@ -95,7 +94,8 @@
         function cleanDate(d) {
             if (!d || d === "" || d === "null" || d === "undefined") return "ACTIVE";
             const dateObj = new Date(d);
-            if (isNaN(dateObj.getTime()) || dateObj.getFullYear() < 2000) return "PENDING";
+            // Ignore 1970/Invalid dates, otherwise format correctly
+            if (isNaN(dateObj.getTime()) || dateObj.getFullYear() < 2000) return d.toString().toUpperCase();
             return dateObj.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
         }
 
@@ -104,6 +104,9 @@
                 const res = await fetch(url, { cache: "no-store" });
                 const data = await res.json();
 
+                // Sort News by Date (Descending)
+                const sortedNews = (data.news || []).sort((a, b) => new Date(b.Date) - new Date(a.Date));
+
                 // 1. Ticker
                 const tickerText = (data.transactions || []).map(i => `${i.Buyer} [${formatNum(i.Volume_tC02)}]`).join(" // ");
                 document.getElementById('ticker-content').innerText += tickerText;
@@ -111,15 +114,14 @@
                 // 2. Transactions
                 const tL = document.getElementById('t-list');
                 (data.transactions || []).forEach(item => {
-                    const sec = sectorConfig[item.Sector] || sectorConfig['Default'];
+                    const secColor = sectorConfig[item.Sector] || sectorConfig['Default'];
                     tL.innerHTML += `
                         <div class="card">
                             <div class="meta">
                                 <span>DATE: ${cleanDate(item.Date)}</span>
                                 <span>
                                     <img class="flag-icon" src="${getFlag(item.Country)}"> ${item.Country || ''}
-                                    <span class="sector-badge" style="border-color: ${sec.color}; color: ${sec.color};">
-                                        <span class="dot" style="background-color: ${sec.dot};"></span>
+                                    <span class="sector-badge" style="border-color: ${secColor}; color: ${secColor};">
                                         ${item.Sector || 'GENERAL'}
                                     </span>
                                 </span>
@@ -145,9 +147,9 @@
                         </div>`;
                 });
 
-                // 4. Latest News
+                // 4. Latest News (Sorted)
                 const nL = document.getElementById('n-list');
-                (data.news || []).slice(0, 10).forEach(item => {
+                sortedNews.slice(0, 15).forEach(item => {
                     nL.innerHTML += `
                         <div style="font-size:12px; color:#aaa; padding:10px; border-bottom:1px solid #222; display:flex; justify-content:space-between;">
                             <span><strong>${cleanDate(item.Date)}</strong> // ${item.Headline || 'Signal'}</span>
