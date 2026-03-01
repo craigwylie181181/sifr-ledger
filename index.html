@@ -3,86 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIFR LEDGER | ANALYST TERMINAL</title>
+    <title>SIFR LEDGER | ANALYST COMMAND</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; --risk-hi: #00ffcc; --risk-lo: #ff4400; }
+        :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; }
         body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
-        
-        /* Navigation & Market Strip */
         .nav-tabs { display: flex; background: #000; border-bottom: 1px solid var(--neon); padding: 0 20px; position: sticky; top: 0; z-index: 9999; }
         .tab { padding: 15px 25px; cursor: pointer; color: #555; font-size: 11px; font-weight: bold; letter-spacing: 2px; }
         .tab.active { color: var(--neon); border-bottom: 2px solid var(--neon); background: rgba(0, 255, 204, 0.05); }
-
         .market-index-strip { background: #0a0a0a; display: flex; gap: 40px; padding: 12px 25px; border-bottom: 1px solid #111; font-size: 10px; color: #888; }
-        .index-item b { color: #fff; font-size: 12px; }
-
+        .market-index-strip b { color: #fff; font-size: 12px; }
         .page-content { padding: 20px; max-width: 1400px; margin: 0 auto; display: none; }
         .page-content.active { display: block; }
-        
-        .header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .logo { font-weight: bold; font-size: 24px; color: var(--neon); letter-spacing: 6px; }
-
-        /* Analytics & Map */
         .analytics-grid { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 20px; margin-bottom: 30px; background: #0a0a0a; padding: 20px; border: 1px solid var(--border); }
         .map-wrap { position: relative; width: 100%; height: 320px; background: radial-gradient(circle at center, #0a1a1a 0%, #050505 100%); overflow: hidden; }
         .gcc-svg { width: 100%; height: 100%; transform: rotateX(45deg) scale(1.1); }
-        .hub { position: absolute; transform-style: preserve-3d; }
-        .spike { position: absolute; width: 2px; bottom: 0; left: -1px; }
-
-        /* Card Elements */
+        .hub { position: absolute; transform-style: preserve-3d; pointer-events: none; }
+        .spike { position: absolute; width: 2px; background: linear-gradient(to top, var(--neon), transparent); bottom: 0; left: -1px; }
+        .tag { position: absolute; color: var(--neon); font-size: 8px; transform: translateY(-100%); width: 100px; text-align: left; border-left: 1px solid var(--neon); padding: 5px; background: rgba(0,0,0,0.8); }
         .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-left: 2px solid #333; position: relative; }
-        .flag-icon { width: 16px; height: 11px; margin-right: 8px; vertical-align: middle; }
-        .integrity-score { position: absolute; top: 15px; right: 15px; text-align: right; }
-        .score-val { font-size: 14px; font-weight: bold; color: var(--neon); }
-        .tracking { font-size: 10px; color: #888; margin-top: 10px; padding-top: 10px; border-top: 1px solid #1a1a1a; }
-        .stat { color: var(--neon); font-size: 12px; font-weight: bold; margin-top: 5px; }
-
-        /* Intelligence Hub */
-        .intel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
-        .intel-card { background: #111; padding: 25px; border: 1px solid #222; font-size: 13px; color: #aaa; }
-        .intel-card h3 { color: #fff; font-size: 14px; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .intel-card b { color: var(--neon); }
+        .flag-icon { width: 16px; height: 11px; margin-right: 8px; vertical-align: middle; border: 0.5px solid #444; }
+        .stat { color: var(--neon); font-size: 12px; font-weight: bold; }
+        .intel-card { background: #111; padding: 25px; border: 1px solid #222; font-size: 13px; color: #aaa; margin-bottom: 20px; }
+        .intel-card h3 { color: #fff; border-bottom: 1px solid #222; padding-bottom: 10px; text-transform: uppercase; }
+        .stat-box { position: absolute; top: 15px; right: 15px; text-align: right; }
     </style>
 </head>
 <body>
-
     <div class="nav-tabs">
         <div class="tab active" data-target="terminal">TERMINAL_COMMAND</div>
-        <div class="tab" data-target="intelligence">STRATEGIC_INTELLIGENCE</div>
+        <div class="tab" data-target="intelligence">STRATEGY_INTELLIGENCE</div>
     </div>
-
-    <div class="market-index-strip" id="market-index">
-        <div class="index-item">SIFR_BENCHMARK: <b id="idx-total">$0.00M</b></div>
-        <div class="index-item">INDUSTRIAL_INDEX (PERM): <b>$150/t</b></div>
-        <div class="index-item">NATURE_INDEX (DEC): <b>$25/t</b></div>
-        <div class="index-item">SUPPLY_DEFICIT: <b id="idx-deficit" style="color:#ff4400;">0.00 Mtpa</b></div>
+    <div class="market-index-strip">
+        <div>TOTAL_MARKET_VALUE: <b id="idx-val">$0.00M</b></div>
+        <div>SUPPLY_CAPACITY: <b id="idx-supply">0.00 Mtpa</b></div>
+        <div>MARKET_DEFICIT: <b id="idx-deficit" style="color:#ff4400">0.00 Mtpa</b></div>
     </div>
-
     <div id="terminal" class="page-content active">
-        <div class="header"><div class="logo">SIFR LEDGER</div><div style="font-size:10px; color:var(--neon);">● RISK_MONITOR: ACTIVE</div></div>
         <div class="analytics-grid">
             <div style="height:320px;"><canvas id="pathwayChart"></canvas></div>
             <div class="map-wrap">
-                <svg class="gcc-svg" viewBox="0 0 240 160"><path d="M30,40 Q60,20 100,35 T145,85 L165,115 L145,140 L90,135 L40,110 L20,70 Z" fill="#000" stroke="#1a3333" stroke-width="1"/></svg>
+                <svg class="gcc-svg" viewBox="0 0 240 160"><path d="M30,40 Q60,20 100,35 T145,85 L165,115 L145,140 L90,135 L40,110 L20,70 Z" fill="#000" stroke="#1a3333" stroke-width="1" stroke-dasharray="2"/></svg>
                 <div id="hubs-container"></div>
             </div>
             <div style="height:320px;"><canvas id="sectorChart"></canvas></div>
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
-            <div><h2 style="font-size:11px; color:#555;">[01] TRANSACTION_LEDGER (SCOPE_3_TRACKING)</h2><div id="t-list"></div></div>
-            <div><h2 style="font-size:11px; color:#555;">[02] ASSET_INVENTORY (INTEGRITY_INDEX)</h2><div id="p-list"></div></div>
+            <div><h2 style="font-size:11px; color:#555;">[01] TRANSACTION_LEDGER</h2><div id="t-list"></div></div>
+            <div><h2 style="font-size:11px; color:#555;">[02] ASSET_INVENTORY</h2><div id="p-list"></div></div>
         </div>
     </div>
-
     <div id="intelligence" class="page-content">
-        <div class="header"><div class="logo">STRATEGIC INTELLIGENCE</div></div>
-        <div class="intel-grid" id="intel-container"></div>
+        <div id="intel-container"></div>
     </div>
 
     <script>
         const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
-        const countryIso = { 'UAE':'ae','Saudi Arabia':'sa','KSA':'sa','Oman':'om','Qatar':'qa','UK':'gb','USA':'us','Kenya':'ke','Tanzania':'tz','New Zealand':'nz' };
+        const countryIso = { 'UAE':'ae','Saudi Arabia':'sa','KSA':'sa','Oman':'om','Qatar':'qa','Kuwait':'kw','UK':'gb','USA':'us','Kenya':'ke','Tanzania':'tz','New Zealand':'nz' };
 
         document.querySelectorAll('.tab').forEach(t => {
             t.addEventListener('click', () => {
@@ -96,61 +73,72 @@
             try {
                 const res = await fetch(url);
                 const data = await res.json();
-                let perm = 0, dec = 0, totalVal = 0, supply = 0, demand = 0, sectors = {}, hubs = {};
+                let perm=0, dec=0, totalVal=0, supply=0, demand=0, sectors={}, hubs={};
 
-                // 1. PROJECT LOGIC: Integrity & Supply
+                // 
+
+[Image of the carbon cycle]
+
                 data.projects.forEach(p => {
                     const isPerm = (p.Permanence || '').includes('Permanent');
                     isPerm ? perm++ : dec++;
                     hubs[p.Country] = (hubs[p.Country] || 0) + 1;
-                    supply += parseFloat(p.Capacity) || 0;
+                    const cap = parseFloat(p.Capacity) || 0;
+                    supply += cap;
 
-                    const score = isPerm ? 9.8 : 6.4;
                     document.getElementById('p-list').innerHTML += `
                         <div class="card" style="border-left-color:${isPerm?'#00bcff':'#00ff66'}">
-                            <div class="integrity-score"><div style="font-size:8px;">INTEGRITY</div><div class="score-val">${score}</div></div>
+                            <div class="stat-box"><div style="font-size:8px;color:#555">SCORE</div><div class="stat">${isPerm?'9.8':'6.4'}</div></div>
                             <div style="font-size:10px; color:#555"><img class="flag-icon" src="https://flagcdn.com/w20/${countryIso[p.Country]||'un'}.png"> ${p.Country}</div>
                             <span style="color:#fff; font-weight:bold;">${p.Project_Name}</span><br>
-                            <span style="font-size:9px; color:#888;">PATHWAY: ${p.Tech_Pathway}</span>
+                            <span style="font-size:9px; color:#888">${p.Tech_Pathway} | ${cap} Mtpa</span>
                         </div>`;
                 });
 
-                // 2. TRANSACTION LOGIC: Price Discovery & Demand
+                // 
                 data.transactions.forEach(t => {
                     sectors[t.Sector] = (sectors[t.Sector] || 0) + 1;
-                    const vol = parseFloat(t.Volume_tC02.replace(/,/g,'')) || 0;
-                    const price = t.Sector === 'Aviation' ? 25 : 150;
+                    const rawVol = t.Volume_tC02 ? t.Volume_tC02.toString().replace(/,/g,'') : "0";
+                    const vol = isNaN(parseFloat(rawVol)) ? 0 : parseFloat(rawVol);
+                    const price = (t.Sector === 'Aviation' || t.Sector === 'Biospheric') ? 25 : 150;
                     totalVal += (vol * price);
-                    demand += (vol / 1000000); // Normalize to Mtpa
+                    demand += (vol / 1000000);
 
                     document.getElementById('t-list').innerHTML += `
                         <div class="card">
                             <div style="font-size:10px; color:#555">${t.Date}</div>
                             <span style="color:#fff; font-weight:bold;">${t.Buyer}</span>
-                            <div class="tracking">
+                            <div style="font-size:10px; color:#888; margin-top:8px; border-top:1px solid #1a1a1a; padding-top:8px;">
                                 <img class="flag-icon" src="https://flagcdn.com/w20/${countryIso[t.Buyer_Country]||'un'}.png"> ${t.Buyer_Country} 
-                                <span style="color:var(--neon); margin:0 5px;">←</span> 
+                                <span style="color:var(--neon)">←</span> 
                                 <img class="flag-icon" src="https://flagcdn.com/w20/${countryIso[t.Seller_Country]||'un'}.png"> ${t.Seller}
                             </div>
-                            <div class="stat">${vol.toLocaleString()} tCO2 | VALUE: $${((vol*price)/1000000).toFixed(2)}M</div>
+                            <div class="stat">${vol > 0 ? vol.toLocaleString() + ' tCO2' : t.Volume_tC02}</div>
                         </div>`;
                 });
 
-                // 3. INDEX UPDATES
-                document.getElementById('idx-total').innerText = `$${(totalVal/1000000).toFixed(2)}M`;
+                document.getElementById('idx-val').innerText = `$${(totalVal/1000000).toFixed(2)}M`;
+                document.getElementById('idx-supply').innerText = `${supply.toFixed(2)} Mtpa`;
                 document.getElementById('idx-deficit').innerText = `${Math.max(0, demand - supply).toFixed(2)} Mtpa`;
 
-                // 4. DYNAMIC INTEL
                 data.intelligence.forEach(i => {
                     document.getElementById('intel-container').innerHTML += `
                         <div class="intel-card"><h3>${i.Entity}</h3><p><b>Strategy:</b> ${i.Strategy}</p><p><b>Behavior:</b> ${i.Behavior}</p></div>`;
                 });
 
-                // Charts & Maps (Abbreviated for brevity)
-                new Chart(document.getElementById('pathwayChart'), { type:'doughnut', data:{ labels:['Perm','Dec'], datasets:[{data:[perm,dec], backgroundColor:['#00bcff','#00ff66']}] }, options:{ cutout:'85%', plugins:{legend:{display:false}} }});
-                new Chart(document.getElementById('sectorChart'), { type:'bar', data:{ labels:Object.keys(sectors), datasets:[{data:Object.values(sectors), backgroundColor:'#00ffcc'}] }, options:{ indexAxis:'y', plugins:{legend:{display:false}} }});
+                // Map & Charts
+                Object.keys(hubs).forEach(c => {
+                    const locs = {'UAE':{l:'70%',t:'65%'},'Saudi Arabia':{l:'35%',t:'48%'},'KSA':{l:'35%',t:'48%'},'Oman':{l:'82%',t:'85%'},'Qatar':{l:'55%',t:'40%'},'Kuwait':{l:'15%',t:'25%'}};
+                    if(locs[c]){
+                        const h = hubs[c] * 35;
+                        document.getElementById('hubs-container').innerHTML += `<div class="hub" style="left:${locs[c].l}; top:${locs[c].t};"><div class="spike" style="height:${h}px;"><div class="tag" style="bottom:${h}px">${c}</div></div></div>`;
+                    }
+                });
 
-            } catch (e) { console.error(e); }
+                new Chart(document.getElementById('pathwayChart'), { type:'doughnut', data:{ labels:['Perm','Dec'], datasets:[{data:[perm,dec], backgroundColor:['#00bcff','#00ff66'], borderWidth:0}] }, options:{ cutout:'85%', plugins:{legend:{display:false}} }});
+                new Chart(document.getElementById('sectorChart'), { type:'bar', data:{ labels:Object.keys(sectors), datasets:[{data:Object.values(sectors), backgroundColor:'#00ffcc'}] }, options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{ticks:{color:'#555', font:{size:8}}}} }});
+
+            } catch (e) { console.error("SIFR_ERROR:", e); }
         }
         window.onload = init;
     </script>
