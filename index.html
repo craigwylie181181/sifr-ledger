@@ -3,20 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIFR LEDGER | FORENSIC COMMAND</title>
+    <title>SIFR LEDGER | FORENSIC TERMINAL</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; }
         body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
-        /* Navigation & Ticker */
-        .nav-tabs { display: flex; background: #000; border-bottom: 1px solid var(--neon); padding: 0 20px; position: sticky; top: 0; z-index: 100; }
+        /* Navigation & Tabs */
+        .nav-tabs { display: flex; background: #000; border-bottom: 1px solid var(--neon); padding: 0 20px; position: sticky; top: 0; z-index: 1000; }
         .tab { padding: 15px 25px; cursor: pointer; color: #555; font-size: 11px; font-weight: bold; letter-spacing: 2px; }
         .tab.active { color: var(--neon); border-bottom: 2px solid var(--neon); background: rgba(0, 255, 204, 0.05); }
-
-        .ticker-wrap { background: #000; border-bottom: 1px solid #111; padding: 10px 0; overflow: hidden; white-space: nowrap; }
-        .ticker { display: inline-block; animation: marquee 60s linear infinite; color: var(--neon); font-size: 10px; text-transform: uppercase; }
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         .container { padding: 20px; max-width: 1400px; margin: 0 auto; display: none; }
         .container.active { display: block; }
@@ -24,7 +20,7 @@
         .header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
         .logo { font-weight: bold; font-size: 24px; color: var(--neon); letter-spacing: 6px; }
 
-        /* GIS Map & Spikes */
+        /* GIS Map Hub */
         .analytics-grid { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 20px; margin-bottom: 30px; background: #0a0a0a; padding: 20px; border: 1px solid var(--border); }
         .map-wrap { position: relative; width: 100%; height: 320px; perspective: 1000px; background: radial-gradient(circle at center, #0a1a1a 0%, #050505 100%); overflow: hidden; }
         .gcc-svg { width: 100%; height: 100%; transform: rotateX(45deg) scale(1.1); }
@@ -32,31 +28,25 @@
         
         .hub { position: absolute; transform-style: preserve-3d; }
         .ring { position: absolute; width: 30px; height: 30px; border: 1px solid rgba(0,255,204,0.3); border-radius: 50%; transform: translate(-50%, -50%); animation: pulse 3s infinite; }
-        .spike { position: absolute; width: 2px; background: linear-gradient(to top, var(--neon), transparent); transform-origin: bottom; bottom: 0; left: -1px; transition: height 1s; }
+        .spike { position: absolute; width: 2px; background: linear-gradient(to top, var(--neon), transparent); transform-origin: bottom; bottom: 0; left: -1px; }
         .tag { position: absolute; color: var(--neon); font-size: 8px; transform: translateY(-100%); width: 100px; text-align: left; border-left: 1px solid var(--neon); padding: 5px; background: rgba(0,0,0,0.8); }
 
-        /* Lists & Elements */
+        /* Data Lists */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .scroll-box { max-height: 550px; overflow-y: auto; padding-right: 10px; border-top: 1px solid #222; padding-top: 15px; }
         
-        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-left: 2px solid #333; }
-        .flag-icon { width: 14px; height: 10px; margin-right: 8px; vertical-align: middle; border: 0.5px solid #333; }
+        .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-left: 2px solid #333; position: relative; }
+        .flag-icon { width: 14px; height: 10px; margin-right: 8px; vertical-align: middle; }
         .sector-badge { font-size: 9px; padding: 2px 6px; border: 1px solid; text-transform: uppercase; float: right; font-weight: bold; }
         .tracking { font-size: 10px; color: #888; margin: 10px 0; padding-top: 8px; border-top: 1px solid #1a1a1a; }
         .stat { color: var(--neon); font-size: 12px; font-weight: bold; }
-        .badge { font-size: 8px; padding: 2px 5px; text-transform: uppercase; margin-top: 5px; display: inline-block; font-weight: bold; }
-        .status-permanent { background: #0044ff; color: #fff; }
-        .status-decadal { background: #006622; color: #fff; }
+        .badge { font-size: 8px; padding: 2px 5px; text-transform: uppercase; margin-top: 5px; display: inline-block; font-weight: bold; color: #fff; }
 
-        /* Strategy Intelligence */
-        .intel-section { margin-bottom: 40px; padding: 25px; background: #0a0a0a; border: 1px solid #111; }
-        .intel-header { color: var(--neon); font-size: 16px; letter-spacing: 2px; margin-bottom: 20px; border-left: 4px solid var(--neon); padding-left: 15px; text-transform: uppercase; }
-        .intel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
-        .intel-card { background: #111; padding: 20px; border: 1px solid #222; font-size: 13px; color: #aaa; line-height: 1.6; }
-        .intel-card h3 { color: #fff; font-size: 14px; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; letter-spacing: 1px; }
+        /* Intelligence Content */
+        .intel-card { background: #111; padding: 20px; border: 1px solid #222; font-size: 13px; color: #aaa; line-height: 1.6; margin-bottom: 20px; }
+        .intel-card h3 { color: #fff; font-size: 14px; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; }
         .intel-card b { color: var(--neon); }
 
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
         @keyframes pulse { 0% { transform: translate(-50%, -50%) scale(0.6); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; } }
     </style>
 </head>
@@ -67,103 +57,59 @@
         <div class="tab" onclick="switchTab('intelligence')">STRATEGIC_INTELLIGENCE</div>
     </div>
 
-    <div class="ticker-wrap">
-        <div class="ticker">
-            GCC_RVCMC: $22.40 ▲ 1.4% // TECH_REMOVAL (CORC): $175.00 ▲ 2.8% // UAE_BLUE_CARBON: $18.50 ▲ 0.9% // SIFR_PREMIUM: $35.40 ▲ 4.2% // EU_ETS: €70.86 ▼ 0.1% //
-        </div>
-    </div>
-
     <div id="terminal" class="container active">
-        <div class="header">
-            <div class="logo">SIFR LEDGER</div>
-            <div style="font-size: 10px; color: var(--neon);">● GEOSPATIAL_COMMAND: ACTIVE</div>
-        </div>
-
+        <div class="header"><div class="logo">SIFR LEDGER</div><div style="font-size:10px; color:var(--neon);">● STATUS: COMMAND_ACTIVE</div></div>
         <div class="analytics-grid">
             <div style="height:320px;"><canvas id="pathwayChart"></canvas></div>
             <div class="map-wrap">
-                <svg class="gcc-svg" viewBox="0 0 240 160">
-                    <path class="land" d="M30,40 Q60,20 100,35 T145,85 L165,115 L145,140 L90,135 L40,110 L20,70 Z"/>
-                </svg>
+                <svg class="gcc-svg" viewBox="0 0 240 160"><path class="land" d="M30,40 Q60,20 100,35 T145,85 L165,115 L145,140 L90,135 L40,110 L20,70 Z"/></svg>
                 <div id="hubs-container"></div>
             </div>
             <div style="height:320px;"><canvas id="sectorChart"></canvas></div>
         </div>
-
         <div class="grid">
-            <div><h2 style="font-size:11px; color:#555; letter-spacing:2px;">[01] TRANSACTION_LEDGER</h2><div class="scroll-box" id="t-list"></div></div>
-            <div><h2 style="font-size:11px; color:#555; letter-spacing:2px;">[02] ASSET_INVENTORY</h2><div class="scroll-box" id="p-list"></div></div>
+            <div><h2 style="font-size:11px; color:#555;">[01] TRANSACTION_LEDGER</h2><div class="scroll-box" id="t-list"></div></div>
+            <div><h2 style="font-size:11px; color:#555;">[02] ASSET_INVENTORY</h2><div class="scroll-box" id="p-list"></div></div>
         </div>
     </div>
 
     <div id="intelligence" class="container">
-        <div class="header">
-            <div class="logo">PORTFOLIO INTELLIGENCE</div>
-            <div style="font-size: 10px; color: var(--neon);">● MARKET_ENTITIES: DEEP_SCAN</div>
-        </div>
-
-        <div class="intel-section">
-            <div class="intel-header">GCC PRIMARY ENTITY ANALYSIS</div>
-            <div class="intel-grid">
-                <div class="intel-card">
-                    <h3>Saudi Aramco | The Regional Anchor</h3>
-                    <p><b>Strategy:</b> Anchored in the <b>Circular Carbon Economy (CCE)</b>. Aramco is pivoting from voluntary offsets to massive industrial sequestration. <br><br>
-                    <b>Key Assets:</b> The <b>Hawiyah CCUS Pilot</b> (0.8 Mtpa) and the <b>Jubail CCS Hub</b> (targeting 9 Mtpa by 2030). <br><br>
-                    <b>Behavior:</b> Bulk-scale acquisition. Their 16M credit commitment via <b>RVCMC</b> is the single largest demand signal in the regional voluntary market.</p>
-                </div>
-                <div class="intel-card">
-                    <h3>ADNOC | Global Equity Aggregator</h3>
-                    <p><b>Strategy:</b> Accelerated 2045 Net Zero target. Focus is on <b>"Exportable Carbon Expertise"</b> and international infrastructure stakes. <br><br>
-                    <b>Key Assets:</b> <b>Al Reyadah</b> (world's first commercial steel CCUS) and <b>Habshan</b>. <br><br>
-                    <b>Behavior:</b> Strategic investments over simple offset retirement. Recently acquired a <b>10.1% stake in Storegga (UK)</b> to secure a footprint in North Sea carbon storage.</p>
-                </div>
-                <div class="intel-card">
-                    <h3>Masdar | Feedstock & Fuel Synthesis</h3>
-                    <p><b>Strategy:</b> Acting as the UAE's technology bridge for <b>Hard-to-Abate</b> sectors. <br><br>
-                    <b>Key Assets:</b> High-tech integration projects using CO2 as a feedstock for <b>Sustainable Aviation Fuel (SAF)</b> and polypropylene synthesis. <br><br>
-                    <b>Behavior:</b> Joint ventures with industrial giants (e.g., Mitsubishi) to monetize carbon waste into high-value chemical products.</p>
-                </div>
-                <div class="intel-card">
-                    <h3>Etihad Airways | Aviation Compliance</h3>
-                    <p><b>Strategy:</b> Reliant on <b>CORSIA-eligible</b> nature-based solutions to manage Scope 3 aviation emissions. <br><br>
-                    <b>Key Assets:</b> The <b>Etihad Mangrove Forest</b> (UAE). <br><br>
-                    <b>Behavior:</b> Portfolio diversification using verified decadal credits from <b>Carbon Tanzania</b> and <b>CarbonClick</b> to offset flight operations.</p>
-                </div>
-                <div class="intel-card">
-                    <h3>QatarEnergy | Massive Scale Sequestration</h3>
-                    <p><b>Strategy:</b> Vertical integration of CCUS into the <b>North Field Expansion</b> (world's largest LNG project). <br><br>
-                    <b>Key Assets:</b> <b>QatarEnergy Injection Facility</b> (2.2 Mtpa currently). <br><br>
-                    <b>Behavior:</b> Massive scale-up targeting <b>11 Mtpa by 2035</b>, making it the highest-capacity single-entity handler in the GCC region.</p>
-                </div>
-                <div class="intel-card">
-                    <h3>PDO (Petroleum Development Oman) | Blue Carbon Leader</h3>
-                    <p><b>Strategy:</b> Leveraging Oman's geographic advantage for nature-based sequestration. <br><br>
-                    <b>Key Assets:</b> <b>10 Million Trees Initiative</b> and large-scale <b>Mangrove Afforestation</b>. <br><br>
-                    <b>Behavior:</b> Founding driver of the <b>Oman Blue Carbon Standard</b>, focusing on high-integrity nature-based credits with long-term ecosystem co-benefits.</p>
-                </div>
+        <div class="header"><div class="logo">PORTFOLIO INTELLIGENCE</div></div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+            <div class="intel-card">
+                <h3>Saudi Aramco | Regional Anchor</h3>
+                <p><b>Strategy:</b> Pivoting from simple offsets to massive industrial sequestration under the CCE framework. <br><br><b>Key Assets:</b> Hawiyah CCUS Pilot (0.8 Mtpa) and Jubail CCS Hub. <br><br><b>Behavior:</b> Primary demand signal for regional VCM via the 16M credit commitment.</p>
+            </div>
+            <div class="intel-card">
+                <h3>ADNOC | Global Equity Aggregator</h3>
+                <p><b>Strategy:</b> Focused on "Exportable Carbon Expertise" and international storage networks. <br><br><b>Key Assets:</b> Al Reyadah and Habshan CCUS. <br><br><b>Behavior:</b> Strategic investments over retirement, evidenced by the 10.1% stake in Storegga (UK).</p>
+            </div>
+            <div class="intel-card">
+                <h3>Etihad Airways | Aviation Compliance</h3>
+                <p><b>Strategy:</b> Reliance on CORSIA-eligible nature-based solutions. <br><br><b>Key Assets:</b> Etihad Mangrove Forest (UAE). <br><br><b>Behavior:</b> High-volume diversification through partners like Carbon Tanzania and CarbonClick.</p>
+            </div>
+            <div class="intel-card">
+                <h3>QatarEnergy & PDO</h3>
+                <p><b>QatarEnergy:</b> Scaling to 11 Mtpa by 2035 directly integrated into LNG expansion. <br><br><b>PDO (Oman):</b> Leading the Oman Blue Carbon Standard with large-scale mangrove afforestation.</p>
             </div>
         </div>
     </div>
 
     <script>
+        // 1. UPDATE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
         const url = "https://script.google.com/macros/s/AKfycbxmJjcV2RYOSEMj7qKKScQn_SAsrgtuEZgeFDsEQ3t0_YuOHnNNiVTllDAA0OFq27N3/exec";
-        
-        const sectorColors = { 
-            'Aviation': '#00bcff', 'Energy': '#ff4400', 'Shipping': '#9944ff', 
-            'Finance': '#00ffcc', 'R&D': '#ffff00', 'Default': '#555' 
-        };
-        
-        const countryToIso = { 
-            'UAE': 'ae', 'Saudi Arabia': 'sa', 'KSA': 'sa', 'Oman': 'om', 
-            'Qatar': 'qa', 'Kuwait': 'kw', 'UK': 'gb', 'USA': 'us', 
-            'Kenya': 'ke', 'Tanzania': 'tz', 'New Zealand': 'nz'
-        };
+
+        const sectorColors = { 'Aviation': '#00bcff', 'Energy': '#ff4400', 'Finance': '#00ffcc', 'Default': '#555' };
+        const countryIso = { 'UAE': 'ae', 'Saudi Arabia': 'sa', 'KSA': 'sa', 'Oman': 'om', 'Qatar': 'qa', 'Kuwait': 'kw', 'UK': 'gb', 'USA': 'us', 'Kenya': 'ke', 'Tanzania': 'tz' };
 
         function switchTab(id) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            event.currentTarget.classList.add('active');
+            // Support for both event object and manual trigger
+            if (window.event) {
+                window.event.currentTarget.classList.add('active');
+            }
         }
 
         async function init() {
@@ -179,65 +125,56 @@
 [Image of the carbon cycle]
 
                 (data.projects || []).forEach(p => {
-                    const cName = p.Country === 'KSA' ? 'Saudi Arabia' : p.Country;
-                    if (counts.hasOwnProperty(cName)) counts[cName]++;
+                    const c = p.Country === 'KSA' ? 'Saudi Arabia' : p.Country;
+                    if (counts.hasOwnProperty(c)) counts[c]++;
                     if ((p.Permanence || '').includes('Permanent')) perm++; else dec++;
                 });
 
-                // Map Rendering
                 const hCont = document.getElementById('hubs-container');
                 Object.keys(counts).forEach(c => {
                     if (counts[c] > 0) {
-                        const h = Math.min(counts[c] * 40, 180);
-                        hCont.innerHTML += `<div class="hub" style="left:${hubLocs[c].l}; top:${hubLocs[c].t};"><div class="ring"></div><div class="spike" style="height:${h}px;"><div class="tag" style="bottom:${h}px">LOC: ${c}<br>INTEL: ${counts[c]} ASSETS</div></div></div>`;
+                        const h = counts[c] * 35;
+                        hCont.innerHTML += `<div class="hub" style="left:${hubLocs[c].l}; top:${hubLocs[c].t};"><div class="ring"></div><div class="spike" style="height:${h}px;"><div class="tag" style="bottom:${h}px">LOC: ${c}<br>COUNT: ${counts[c]}</div></div></div>`;
                     }
                 });
 
-                // Charts
                 new Chart(document.getElementById('pathwayChart'), {
                     type:'doughnut', data:{ labels:['Permanent','Decadal'], datasets:[{data:[perm,dec], backgroundColor:['#00bcff','#00ff66'], borderWidth:0}] },
                     options:{ cutout:'85%', plugins:{ legend:{position:'bottom', labels:{color:'#555', font:{size:9}}}, title:{display:true, text:'QUALITY_SPLIT', color:'#fff'} } }
                 });
 
-                (data.transactions || []).forEach(t => { sectors[t.Sector] = (sectors[t.Sector] || 0) + 1; });
-                new Chart(document.getElementById('sectorChart'), {
-                    type:'bar', data:{ labels:Object.keys(sectors), datasets:[{data:Object.values(sectors), backgroundColor:'#00ffcc'}] },
-                    options:{ indexAxis:'y', plugins:{legend:{display:false}, title:{display:true, text:'SECTOR_SPLIT', color:'#fff'}}, scales:{x:{display:false}, y:{ticks:{color:'#555', font:{size:9}}}} }
-                });
-
                 // 
-                const tL = document.getElementById('t-list');
+                const tList = document.getElementById('t-list');
                 (data.transactions || []).forEach(t => {
+                    sectors[t.Sector] = (sectors[t.Sector] || 0) + 1;
                     const clr = sectorColors[t.Sector] || sectorColors['Default'];
-                    const bFlag = `https://flagcdn.com/w20/${countryToIso[t.Buyer_Country] || 'un'}.png`;
-                    const sFlag = `https://flagcdn.com/w20/${countryToIso[t.Seller_Country] || 'un'}.png`;
-                    
-                    tL.innerHTML += `<div class="card">
-                        <span class="sector-badge" style="border-color:${clr}; color:${clr}">${t.Sector || 'General'}</span>
+                    const bFlag = `https://flagcdn.com/w20/${countryIso[t.Buyer_Country] || 'un'}.png`;
+                    const sFlag = `https://flagcdn.com/w20/${countryIso[t.Seller_Country] || 'un'}.png`;
+                    tList.innerHTML += `<div class="card" style="border-left-color:${clr}">
+                        <span class="sector-badge" style="border-color:${clr}; color:${clr}">${t.Sector || 'VCM'}</span>
                         <div style="font-size:10px; color:#555">${t.Date}</div>
-                        <span style="color:#fff; font-weight:bold; font-size:13px;">${t.Buyer}</span>
-                        <div class="tracking">
-                            <img class="flag-icon" src="${bFlag}"> <span style="color:#fff">${t.Buyer_Country || 'GCC'}</span> 
-                            <span style="color:var(--neon); margin: 0 8px;">←</span> 
-                            <img class="flag-icon" src="${sFlag}"> <span>${t.Seller || 'VCM'}</span>
-                        </div>
+                        <span style="color:#fff; font-weight:bold;">${t.Buyer}</span>
+                        <div class="tracking"><img class="flag-icon" src="${bFlag}"> ${t.Buyer_Country} <span style="color:var(--neon)">←</span> <img class="flag-icon" src="${sFlag}"> ${t.Seller}</div>
                         <div class="stat">${Number(t.Volume_tC02 || 0).toLocaleString()} tCO2</div>
                     </div>`;
                 });
 
-                // Asset Inventory
-                const pL = document.getElementById('p-list');
-                (data.projects || []).forEach(p => {
-                    const isPerm = (p.Permanence || '').includes('Permanent');
-                    const flag = `https://flagcdn.com/w20/${countryToIso[p.Country] || 'un'}.png`;
-                    pL.innerHTML += `<div class="card" style="border-left-color:${isPerm ? '#00bcff' : '#00ff66'}">
-                        <div style="font-size:10px; color:#555"><img class="flag-icon" src="${flag}"> ${p.Country}</div>
-                        <span style="color:#fff; font-weight:bold;">${p.Project_Name}</span><br>
-                        <span class="badge ${isPerm ? 'status-permanent' : 'status-decadal'}">${p.Permanence}</span>
-                    </div>`;
+                new Chart(document.getElementById('sectorChart'), {
+                    type:'bar', data:{ labels:Object.keys(sectors), datasets:[{data:Object.values(sectors), backgroundColor:'#00ffcc'}] },
+                    options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{ticks:{color:'#555', font:{size:8}}}} }
                 });
 
-            } catch (e) { console.error("FETCH_ERROR:", e); }
+                const pList = document.getElementById('p-list');
+                (data.projects || []).forEach(p => {
+                    const isPerm = (p.Permanence || '').includes('Permanent');
+                    const flag = `https://flagcdn.com/w20/${countryIso[p.Country] || 'un'}.png`;
+                    pList.innerHTML += `<div class="card" style="border-left-color:${isPerm ? '#00bcff' : '#00ff66'}">
+                        <div style="font-size:10px; color:#555"><img class="flag-icon" src="${flag}"> ${p.Country}</div>
+                        <span style="color:#fff; font-weight:bold;">${p.Project_Name}</span><br>
+                        <span class="badge" style="background:${isPerm ? '#0044ff' : '#006622'}">${p.Permanence}</span>
+                    </div>`;
+                });
+            } catch (e) { console.error("SIFR_FETCH_ERROR:", e); }
         }
         window.onload = init;
     </script>
