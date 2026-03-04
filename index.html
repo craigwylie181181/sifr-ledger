@@ -1,96 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIFR LEDGER | ANALYST TERMINAL</title>
+    <meta charset="UTF-8"><title>SIFR LEDGER | ANALYST TERMINAL</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; --text: #e0e0e0; }
-        body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
-        
-        /* Navigation & Ticker */
-        .nav-tabs { display: flex; background: #000; border-bottom: 1px solid var(--neon); position: sticky; top: 0; z-index: 9999; }
-        .tab { padding: 15px 25px; cursor: pointer; color: #555; font-size: 11px; font-weight: bold; letter-spacing: 2px; border-bottom: 2px solid transparent; transition: 0.2s; }
-        .tab.active { color: var(--neon); border-bottom: 2px solid var(--neon); background: rgba(0, 255, 204, 0.05); }
-
+        :root { --neon: #00ffcc; --bg: #050505; --card: #111; --border: #222; }
+        body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', monospace; margin: 0; }
+        .nav { display: flex; background: #000; border-bottom: 1px solid var(--neon); position: sticky; top: 0; z-index: 99; }
+        .tab { padding: 15px 25px; cursor: pointer; color: #555; font-size: 11px; font-weight: bold; letter-spacing: 2px; }
+        .tab.active { color: var(--neon); border-bottom: 2px solid var(--neon); background: rgba(0,255,204,0.05); }
         .ticker-wrap { background: #000; border-bottom: 1px solid #111; padding: 10px 0; overflow: hidden; white-space: nowrap; }
-        .ticker { display: inline-block; animation: marquee 60s linear infinite; color: var(--neon); font-size: 10px; text-transform: uppercase; }
-
-        .market-index { background: #0a0a0a; display: flex; gap: 40px; padding: 12px 25px; border-bottom: 1px solid #111; font-size: 10px; color: #888; }
-        .market-index b { color: #fff; font-size: 12px; }
-
-        .page-content { padding: 20px; max-width: 1600px; margin: 0 auto; display: none; }
-        .page-content.active { display: block; }
-
-        /* Dashboard Containers */
-        .analytics-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 30px; background: #0a0a0a; padding: 20px; border: 1px solid var(--border); }
-        .list-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-        
-        .scroll-box { max-height: 500px; overflow-y: auto; padding-right: 12px; border-top: 1px solid #222; padding-top: 15px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
-        .scroll-box::-webkit-scrollbar { width: 4px; }
-        .scroll-box::-webkit-scrollbar-thumb { background: var(--neon); }
-
-        /* Cards & Badges */
+        .ticker { display: inline-block; animation: marquee 60s linear infinite; color: var(--neon); font-size: 10px; }
+        .index-strip { background: #0a0a0a; display: flex; gap: 40px; padding: 12px 25px; border-bottom: 1px solid #111; font-size: 11px; }
+        .page { padding: 20px; max-width: 1600px; margin: 0 auto; display: none; }
+        .page.active { display: block; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .scroll { max-height: 550px; overflow-y: auto; border-top: 1px solid #222; padding-top: 15px; scrollbar-width: thin; scrollbar-color: var(--neon) #111; }
         .card { background: var(--card); border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-left: 2px solid #333; position: relative; }
-        .flag-icon { width: 16px; height: 11px; margin-right: 8px; vertical-align: middle; border: 0.5px solid #444; }
-        .stat { color: var(--neon); font-size: 12px; font-weight: bold; }
-        .risk-score { position: absolute; top: 15px; right: 15px; color: var(--neon); font-weight: bold; font-size: 12px; opacity: 0.8; }
-
-        .news-card { background: #080808; border: 1px solid #111; padding: 12px; margin-bottom: 10px; font-size: 11px; border-left: 2px solid var(--neon); }
-        .news-tag { color: var(--neon); font-weight: bold; margin-right: 8px; }
-
-        .intel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
-        .intel-card { background: #111; padding: 25px; border: 1px solid #222; font-size: 13px; color: #aaa; line-height: 1.6; }
-        .intel-card h3 { color: #fff; border-bottom: 1px solid #222; padding-bottom: 10px; margin-top: 0; text-transform: uppercase; }
-
+        .risk { position: absolute; top: 15px; right: 15px; color: var(--neon); font-weight: bold; font-size: 12px; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
     </style>
 </head>
 <body>
-
-    <div class="nav-tabs">
-        <div class="tab active" onclick="switchTab('terminal')">TERMINAL_COMMAND</div>
-        <div class="tab" onclick="switchTab('intelligence')">STRATEGIC_INTELLIGENCE</div>
+    <div class="nav">
+        <div class="tab active" onclick="show('term')">TERMINAL_COMMAND</div>
+        <div class="tab" onclick="show('intel')">STRATEGIC_INTELLIGENCE</div>
     </div>
-
-    <div class="ticker-wrap">
-        <div class="ticker">
-            GCC_RVCMC: $22.40 ▲ 1.4% // TECH_REMOVAL (CORC): $175.00 ▲ 2.8% // UAE_BLUE_CARBON: $18.50 ▲ 0.9% // SIFR_PREMIUM: $35.40 ▲ 4.2% // CCS_HUB_FID: ACTIVE //
+    <div class="ticker-wrap"><div class="ticker">SIFR_MARKET_INDEX: $150.00 PERMANENT // $25.00 DECADAL // ARABIA_CCS_HUB: ACTIVE // NEOM_DAC_PILOT: FID_REACHED //</div></div>
+    <div class="index-strip">
+        <div>TOTAL_VALUE: <b id="v-val">$0.00M</b></div>
+        <div>CAPACITY: <b id="v-cap">0.00 Mtpa</b></div>
+        <div>DEFICIT: <b id="v-def" style="color:#ff4400">0.00 Mtpa</b></div>
+    </div>
+    <div id="term" class="page active">
+        <div class="grid" style="margin-bottom:30px;">
+            <div style="height:280px;"><canvas id="c1"></canvas></div>
+            <div style="height:280px;"><canvas id="c2"></canvas></div>
+            <div style="height:280px;"><canvas id="c3"></canvas></div>
+        </div>
+        <div class="grid">
+            <div><h2 style="font-size:10px; color:#555;">[01] TRANSACTION_LEDGER</h2><div class="scroll" id="tList"></div></div>
+            <div><h2 style="font-size:10px; color:#555;">[02] PROJECTS</h2><div class="scroll" id="pList"></div></div>
+            <div><h2 style="font-size:10px; color:#555;">[03] MARKET_INTEL_NEWS</h2><div class="scroll" id="nList"></div></div>
         </div>
     </div>
-
-    <div class="market-index">
-        <div>PORTFOLIO_VALUE: <b id="idx-val">$0.00M</b></div>
-        <div>SUPPLY_CAPACITY: <b id="idx-supply">0.00 Mtpa</b></div>
-        <div>MARKET_DEFICIT: <b id="idx-deficit" style="color:#ff4400">0.00 Mtpa</b></div>
-    </div>
-
-    <div id="terminal" class="page-content active">
-        <div class="analytics-grid">
-            <div style="height:300px;"><canvas id="pathChart"></canvas></div>
-            <div style="height:300px;"><canvas id="hubChart"></canvas></div>
-            <div style="height:300px;"><canvas id="sectorChart"></canvas></div>
-        </div>
-        <div class="list-grid">
-            <div><h2 style="font-size:10px; color:#555; letter-spacing:1px;">[01] TRANSACTION_LEDGER</h2><div class="scroll-box" id="tList"></div></div>
-            <div><h2 style="font-size:10px; color:#555; letter-spacing:1px;">[02] ASSET_INVENTORY</h2><div class="scroll-box" id="pList"></div></div>
-            <div><h2 style="font-size:10px; color:#555; letter-spacing:1px;">[03] LATEST_MARKET_INTEL</h2><div class="scroll-box" id="nList"></div></div>
-        </div>
-    </div>
-
-    <div id="intelligence" class="page-content">
-        <div class="intel-grid" id="iCont"></div>
-    </div>
+    <div id="intel" class="page"><div id="iCont" class="grid"></div></div>
 
     <script>
-        // 1. UPDATE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
-        const url = "https://script.google.com/macros/s/AKfycbzxgNpxJvfAGmMjiepXGlqDtirXqhNnATpXw2oihaRJ2lrnZ0VazIG2m9JyhUzxWQhz/exe";
+        const url = "https://script.google.com/macros/s/AKfycbytjDbcbqLGsTvIedmLEzRdi6tlQvG0sZJccM9eCLHB0GpeHJ8J-72PJK0TgflYILyF/exec"; 
+        const iso = { 'UAE':'ae','Saudi Arabia':'sa','KSA':'sa','Oman':'om','Qatar':'qa','Kuwait':'kw','UK':'gb','USA':'us' };
 
-        const countryIso = { 'UAE':'ae','Saudi Arabia':'sa','KSA':'sa','Oman':'om','Qatar':'qa','Kuwait':'kw','UK':'gb','USA':'us','Kenya':'ke','Tanzania':'tz' };
-
-        function switchTab(id) {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+        function show(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             event.currentTarget.classList.add('active');
@@ -98,85 +59,43 @@
 
         async function init() {
             try {
-                const res = await fetch(url);
+                const res = await fetch(url, { redirect: "follow" });
                 const data = await res.json();
-                let perm=0, dec=0, totalVal=0, supply=0, demand=0, sectors={}, hubs={};
+                let perm=0, dec=0, tVal=0, cap=0, dem=0, sectors={}, hubs={};
 
-                // 1. Process Projects
+                // 
                 (data.projects || []).forEach(p => {
-                    const isPerm = (p.Permanence || '').includes('Permanent');
-                    isPerm ? perm++ : dec++;
+                    const isP = p.Perm.includes('Perm'); isP ? perm++ : dec++;
                     hubs[p.Country] = (hubs[p.Country] || 0) + 1;
-                    
-                    const capRaw = p.Capacity ? p.Capacity.toString().replace(/[^\d.]/g, '') : "0";
-                    const capNum = parseFloat(capRaw) || 0;
-                    supply += capNum;
-
-                    document.getElementById('pList').innerHTML += `
-                        <div class="card" style="border-left-color:${isPerm ? '#00bcff' : '#00ff66'}">
-                            <div class="risk-score">${isPerm ? '9.8' : '6.4'}</div>
-                            <div style="font-size:10px; color:#555"><img class="flag-icon" src="https://flagcdn.com/w20/${countryIso[p.Country]||'un'}.png"> ${p.Country}</div>
-                            <span style="color:#fff; font-weight:bold;">${p.Project_Name}</span><br>
-                            <span style="font-size:9px; color:#888;">${p.Tech_Pathway} | ${capNum} Mtpa</span>
-                        </div>`;
+                    const c = parseFloat(p.Capacity.toString().replace(/[^\d.]/g, '')) || 0; cap += c;
+                    document.getElementById('pList').innerHTML += `<div class="card" style="border-left-color:${isP?'#00bcff':'#00ff66'}"><div class="risk">${p.Score || (isP?9.8:6.4)}</div><div style="font-size:9px; color:#555;"><img style="width:14px;" src="https://flagcdn.com/w20/${iso[p.Country]||'un'}.png"> ${p.Country}</div><b>${p.Entity}</b><br><span style="font-size:9px;color:#888">${p.Tech}</span></div>`;
                 });
 
-                // 2. Process Transactions
                 (data.transactions || []).forEach(t => {
                     sectors[t.Sector] = (sectors[t.Sector] || 0) + 1;
-                    const volRaw = t.Volume_tC02 ? t.Volume_tC02.toString().replace(/,/g, '') : "0";
-                    const volNum = isNaN(parseFloat(volRaw)) ? 0 : parseFloat(volRaw);
-                    const price = t.Sector === 'Aviation' ? 25 : 150;
-                    totalVal += (volNum * price);
-                    demand += (volNum / 1000000);
-
-                    document.getElementById('tList').innerHTML += `
-                        <div class="card">
-                            <div style="font-size:10px; color:#555">${t.Date}</div>
-                            <span style="color:#fff; font-weight:bold;">${t.Buyer}</span>
-                            <div style="font-size:10px; color:#888; margin-top:10px; border-top:1px solid #1a1a1a; padding-top:8px;">
-                                <img class="flag-icon" src="https://flagcdn.com/w20/${countryIso[t.Buyer_Country]||'un'}.png"> ${t.Buyer_Country} 
-                                <span style="color:var(--neon)">←</span> 
-                                <img class="flag-icon" src="https://flagcdn.com/w20/${countryIso[t.Seller_Country]||'un'}.png"> ${t.Seller}
-                            </div>
-                            <div class="stat">${volNum > 0 ? volNum.toLocaleString() + ' tCO2' : t.Volume_tC02} | $${((volNum*price)/1000000).toFixed(2)}M</div>
-                        </div>`;
+                    const v = parseFloat(t.Volume.toString().replace(/,/g,'')) || 0;
+                    tVal += (v * (t.Sector === 'Aviation' ? 25 : 150)); dem += (v / 1e6);
+                    document.getElementById('tList').innerHTML += `<div class="card"><div style="font-size:9px;color:#555">${t.Date}</div><b>${t.Buyer}</b><div style="font-size:9px;border-top:1px solid #222;margin-top:8px;padding-top:8px;"><img style="width:14px;" src="https://flagcdn.com/w20/${iso[t.B_Country]||'un'}.png"> ${t.B_Country} ← ${t.Seller}</div></div>`;
                 });
 
-                // 3. Process News
                 (data.news || []).forEach(n => {
-                    document.getElementById('nList').innerHTML += `
-                        <div class="news-card">
-                            <span class="news-tag">[${n.Region_Tag || 'GLOBAL'}]</span> 
-                            <a href="${n.URL}" target="_blank" style="color:#eee; text-decoration:none; font-weight:bold;">${n.Headline}</a>
-                            <div style="font-size:8px; color:#555; margin-top:8px;">SOURCE: ${n.Source} | ${n.Date}</div>
-                        </div>`;
+                    document.getElementById('nList').innerHTML += `<div style="background:#080808;padding:12px;margin-bottom:10px;border-left:2px solid var(--neon);font-size:11px;"><span style="color:var(--neon)">[${n.Region}]</span> <a href="${n.URL}" target="_blank" style="color:#eee;text-decoration:none;">${n.Headline}</a></div>`;
                 });
 
-                // 4. Update Market Indices
-                document.getElementById('idx-val').innerText = `$${(totalVal/1000000).toFixed(2)}M`;
-                document.getElementById('idx-supply').innerText = `${supply.toFixed(2)} Mtpa`;
-                document.getElementById('idx-deficit').innerText = `${Math.max(0, demand - supply).toFixed(2)} Mtpa`;
-
-                // 5. Build Dynamic Intelligence
-                (data.intelligence || []).forEach(i => {
-                    document.getElementById('iCont').innerHTML += `
-                        <div class="intel-card">
-                            <h3>${i.Entity}</h3>
-                            <p><b>Strategy:</b> ${i.Strategy}</p>
-                            <p><b>Behavior:</b> ${i.Behavior}</p>
-                        </div>`;
+                (data.intel || []).forEach(i => {
+                    document.getElementById('iCont').innerHTML += `<div class="card" style="background:#111;"><h3>${i.Entity}</h3><p style="font-size:12px;color:#888;"><b>Strategy:</b> ${i.Strategy}<br><br><b>Behavior:</b> ${i.Behavior}</p></div>`;
                 });
 
-                // 6. Charts Restoration
-                new Chart(document.getElementById('pathChart'), { type:'doughnut', data:{ labels:['Perm','Dec'], datasets:[{data:[perm,dec], backgroundColor:['#00bcff','#00ff66'], borderWidth:0}] }, options:{ cutout:'85%', plugins:{ title:{display:true, text:'QUALITY_SPLIT', color:'#fff'} } }});
-                new Chart(document.getElementById('hubChart'), { type:'bar', data:{ labels:Object.keys(hubs), datasets:[{data:Object.values(hubs), backgroundColor:'#00ffcc'}] }, options:{ plugins:{ title:{display:true, text:'HUB_DENSITY', color:'#fff'} }, scales:{y:{ticks:{color:'#555'}}, x:{ticks:{color:'#555'}}} }});
-                new Chart(document.getElementById('sectorChart'), { type:'bar', data:{ labels:Object.keys(sectors), datasets:[{data:Object.values(sectors), backgroundColor:'#9944ff'}] }, options:{ indexAxis:'y', plugins:{ title:{display:true, text:'SECTOR_SPLIT', color:'#fff'} }, scales:{x:{display:false}, y:{ticks:{color:'#555'}}} }});
+                document.getElementById('v-val').innerText = `$${(tVal/1e6).toFixed(2)}M`;
+                document.getElementById('v-cap').innerText = `${cap.toFixed(2)} Mtpa`;
+                document.getElementById('v-def').innerText = `${Math.max(0, dem-cap).toFixed(2)} Mtpa`;
 
+                new Chart(document.getElementById('c1'), { type:'doughnut', data:{ labels:['Permanent','Decadal'], datasets:[{data:[perm,dec], backgroundColor:['#00bcff','#00ff66'], borderWidth:0}] }, options:{ cutout:'85%', plugins:{title:{display:true,text:'QUALITY_SPLIT',color:'#fff'}} }});
+                new Chart(document.getElementById('c2'), { type:'bar', data:{ labels:Object.keys(hubs), datasets:[{data:Object.values(hubs), backgroundColor:'#00ffcc'}] }, options:{ plugins:{title:{display:true,text:'PROJECT_GEOGRAPHY',color:'#fff'}} }});
+                new Chart(document.getElementById('c3'), { type:'bar', data:{ labels:Object.keys(sectors), datasets:[{data:Object.values(sectors), backgroundColor:'#9944ff'}] }, options:{ indexAxis:'y', plugins:{title:{display:true,text:'SECTOR_DYNAMICS',color:'#fff'}} }});
             } catch (e) { console.error("SIFR_ERROR:", e); }
         }
         window.onload = init;
     </script>
 </body>
 </html>
-
