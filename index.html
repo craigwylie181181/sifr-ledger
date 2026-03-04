@@ -47,7 +47,7 @@
     <div id="intel" class="page"><div id="iCont" class="grid"></div></div>
 
     <script>
-        const url = "https://script.google.com/macros/s/AKfycbytjDbcbqLGsTvIedmLEzRdi6tlQvG0sZJccM9eCLHB0GpeHJ8J-72PJK0TgflYILyF/exec"; 
+        const url = "https://script.google.com/macros/s/AKfycbzRqxSnBhL0CL7H-zPfUABQxycmqn60P7OMhPL53FEhpHHxpz_MoHkDrz-Y9lwy__AQ/exec"; 
         const iso = { 'UAE':'ae','Saudi Arabia':'sa','KSA':'sa','Oman':'om','Qatar':'qa','Kuwait':'kw','UK':'gb','USA':'us' };
 
         function show(id) {
@@ -59,11 +59,10 @@
 
         async function init() {
             try {
-                const res = await fetch(url, { redirect: "follow" });
+                const res = await fetch(url);
                 const data = await res.json();
                 let perm=0, dec=0, tVal=0, cap=0, dem=0, sectors={}, hubs={};
 
-                // 
                 (data.projects || []).forEach(p => {
                     const isP = p.Perm.includes('Perm'); isP ? perm++ : dec++;
                     hubs[p.Country] = (hubs[p.Country] || 0) + 1;
@@ -92,7 +91,7 @@
 
                 new Chart(document.getElementById('c1'), { type:'doughnut', data:{ labels:['Permanent','Decadal'], datasets:[{data:[perm,dec], backgroundColor:['#00bcff','#00ff66'], borderWidth:0}] }, options:{ cutout:'85%', plugins:{title:{display:true,text:'QUALITY_SPLIT',color:'#fff'}} }});
                 new Chart(document.getElementById('c2'), { type:'bar', data:{ labels:Object.keys(hubs), datasets:[{data:Object.values(hubs), backgroundColor:'#00ffcc'}] }, options:{ plugins:{title:{display:true,text:'PROJECT_GEOGRAPHY',color:'#fff'}} }});
-                new Chart(document.getElementById('c3'), { type:'bar', data:{ labels:Object.keys(sectors), datasets:[{data:Object.values(sectors), backgroundColor:'#9944ff'}] }, options:{ indexAxis:'y', plugins:{title:{display:true,text:'SECTOR_DYNAMICS',color:'#fff'}} }});
+                new Chart(document.getElementById('sectorChart'), { type:'bar', data:{ labels:Object.keys(sectors), datasets:[{data:Object.values(sectors), backgroundColor:'#9944ff'}] }, options:{ indexAxis:'y', plugins:{title:{display:true,text:'SECTOR_DYNAMICS',color:'#fff'}} }});
             } catch (e) { console.error("SIFR_ERROR:", e); }
         }
         window.onload = init;
